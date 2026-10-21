@@ -12,7 +12,7 @@ CodexView is a lightweight Codex CLI reader built for **hundreds to thousands of
 | --- | --- | --- |
 | Navigate thousands of turns; load content on demand and jump by task number | Content search, task timestamps, reading recovery and report viewing | One file, Python standard library, no third-party runtime dependencies |
 
-**Scale validation:** a 2,000-turn synthetic session and a 744-task, approximately 600 MB real session have been exercised separately, covering task count and large-file workloads. [See validation scope and performance records](docs/performance.md#task-count-validation-2026-10-21).
+**Scale validation**: a 2,000-turn synthetic session and a 744-task, approximately 600 MB real session have been exercised separately, covering task count and large-file workloads. [See validation scope and performance records](docs/performance.md#task-count-validation-2026-10-21).
 
 **Last updated: 2026-10-21 (Asia/Shanghai)** · Current version: `6.3.0-dev.2` · Development preview
 
@@ -59,7 +59,7 @@ The final command should print `CodexView 6.3.0-dev.2`.
 
 Previous baseline: [6.2.1](https://github.com/chuangchuangtan/codexview/releases/tag/v6.2.1). Use each Release’s own files and feature list.
 
-**Keep PATH available in new terminals:** choose the commands for your shell. Run `echo "$SHELL"` if you are unsure.
+**Keep PATH available in new terminals**: choose the commands for your shell. Run `echo "$SHELL"` if you are unsure.
 
 Bash, commonly used on Linux servers:
 
@@ -98,7 +98,7 @@ For **local access only**, run:
 codexview serve
 ```
 
-Then open **http://127.0.0.1:17864/**. This default listens only on the local machine; it differs from the server configuration above.
+Then open **[http://127.0.0.1:17864/](http://127.0.0.1:17864/)**. This default listens only on the local machine; it differs from the server configuration above.
 
 There is no built-in login. Use a trusted network, an authenticated reverse proxy, or SSH forwarding for remote access.
 
