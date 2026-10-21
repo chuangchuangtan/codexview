@@ -48,9 +48,9 @@ The 6.3.0-dev.2 candidate was compared against the deployed 6.3.0-dev version on
 
 | Endpoint | 6.3.0-dev median / p95 | 6.3.0-dev.2 median / p95 |
 | --- | ---: | ---: |
-| Session shell | 15.85 / 17.40 ms | 15.91 / 20.71 ms |
-| Warm manifest | 16.30 / 19.54 ms | 16.23 / 18.26 ms |
-| Task 632 structure | 4.22 / 6.26 ms | 4.21 / 5.58 ms |
-| Representative section | 4.17 / 5.27 ms | 4.27 / 7.03 ms |
+| Session shell | 16.01 / 18.25 ms | 15.98 / 18.34 ms |
+| Warm manifest | 16.16 / 17.78 ms | 16.49 / 18.71 ms |
+| Task 632 structure | 3.84 / 4.56 ms | 3.90 / 4.27 ms |
+| Representative section | 4.13 / 4.98 ms | 4.08 / 4.76 ms |
 
-The shell increased by 8,600 bytes (4.2%). The largest measured p95 increase was 3.31 ms. This verifies warm HTTP behavior only, not browser paint, cold indexing or first search. Session discovery, indexing and search implementations are unchanged; scroll bookmarks add no network requests.
+The shell increased by 8,670 bytes (4.2%). The largest measured p95 increase was 0.93 ms. This verifies warm HTTP behavior only, not browser paint, cold indexing or first search. Session discovery, indexing and search implementations are unchanged; scroll bookmarks add no network requests.
