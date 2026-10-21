@@ -1,6 +1,6 @@
 # Generated report reader (6.3.0 development)
 
-The published 6.2.1 release remains the stable baseline. The 6.3.0-dev.2 source is available on `main`; its implementation history is also preserved on `codex/document-reader`.
+Download the matching [6.3.0-dev.2 preview](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.2). The published 6.2.1 files remain available as the previous stable baseline.
 
 Last updated: 2026-10-21 (Asia/Shanghai).
 

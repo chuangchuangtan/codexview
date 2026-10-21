@@ -15,18 +15,28 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
       - name: Verify release version
         shell: bash
         run: |
           version=$(python3 -c "import runpy; print(runpy.run_path('codexview', run_name='release')['VERSION'])")
           test "$GITHUB_REF_NAME" = "v$version"
           test -f "docs/releases/$GITHUB_REF_NAME.md"
+          for readme in README.md README.zh-CN.md; do
+            grep -Fq "releases/download/v$version/codexview-$version" "$readme"
+            grep -Fq "cp codexview-$version " "$readme"
+          done
           echo "CODEXVIEW_VERSION=$version" >> "$GITHUB_ENV"
       - name: Build and test
         run: |
           python3 tools/build.py
           git diff --exit-code -- codexview
           python3 -m unittest discover -s tests -v
+          npm ci
+          npm test
           python3 tools/package_release.py
           cd dist
           sha256sum -c SHA256SUMS

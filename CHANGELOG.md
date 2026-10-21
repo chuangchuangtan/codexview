@@ -7,6 +7,7 @@
 - Add an optional Markdown heading outline with Unicode and duplicate-heading anchors.
 - Add compact task rows, reading-width presets and grouped review controls without changing task virtualization or search.
 - Retain the 6.2.1 stable release and the preceding 6.3.0-dev source baseline.
+- Publish versioned standalone/source preview packages for 6.3.0-dev and 6.3.0-dev.2, with matching English/Chinese installation links and release-time version checks.
 
 ## 6.3.0-dev — 2026-10-21 (Asia/Shanghai) — generated report reader
 
