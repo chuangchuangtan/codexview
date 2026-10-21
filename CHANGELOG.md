@@ -1,5 +1,12 @@
 # Changelog
 
+## 6.3.0-dev.4 — 2026-10-21 (Asia/Shanghai) — review controls hotfix
+
+- Restore missing review-write and task-step handlers used by mark buttons, review shortcuts, notes and next/previous navigation.
+- Serialize review writes, prevent duplicate pending toggles and show save failures without losing note text or displaying unsaved marks as saved.
+- Update buttons, navigator badges, filters and overview counts in place; retain loaded prose and scroll position.
+- Add UI-event regression coverage for every flag, notes, recreation/persistence, error recovery and task navigation, plus HTTP persistence/source-integrity checks.
+
 ## 6.3.0-dev.3 — 2026-10-21 (Asia/Shanghai) — continuous reading
 
 - Preserve evicted task heights, preload adjacent prose and remove delayed navigation corrections to keep scrolling continuous.

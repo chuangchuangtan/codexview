@@ -41,6 +41,16 @@ class HttpTests(unittest.TestCase):
         rendered=NS['workspace_html'](SID,{'adapter':'native-jsonl','tasks':[]},{'tasks':{},'note':dangerous},[],[])
         self.assertNotIn(dangerous,rendered)
         self.assertEqual(self.request('GET','/api/health')[0],200)
+    def test_review_flags_and_notes_persist_without_source_writes(self):
+        d=self.ready();tid=d['tasks'][0]['id'];url='/api/session/'+SID+'/task/'+tid
+        source=self.path.read_bytes();stamp=self.path.stat().st_mtime_ns
+        for key in ('important','marked','later','reviewed'):
+            status,body,_=self.request('POST',url,json.dumps({key:True}),{'Content-Type':'application/json'})
+            self.assertEqual(status,200);self.assertTrue(json.loads(body)['state']['tasks'][tid][key])
+        self.request('POST',url,json.dumps({'note':'Review note'}))
+        fresh=NS['Store'](self.home,self.rt,[]);state=fresh.load_state(SID)['tasks'][tid]
+        self.assertEqual(state['note'],'Review note');self.assertTrue(all(state[k] for k in ('important','marked','later','reviewed')))
+        self.assertEqual(self.path.read_bytes(),source);self.assertEqual(self.path.stat().st_mtime_ns,stamp)
     def test_deep_hit_focus_cache_and_append_invalidation(self):
         with self.path.open('ab') as f:f.write(record('assistant','x'*300000+'deepneedle'))
         d=self.ready();tid=d['tasks'][0]['id'];result=self.store.search(SID,'deepneedle');before=self.store.metrics['search_bytes']
