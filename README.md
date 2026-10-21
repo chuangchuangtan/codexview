@@ -1,18 +1,22 @@
-# CodexView
+<div align="center">
+  <h1>CodexView</h1>
+  <p><strong>Thousands of turns. Clear context.</strong></p>
+  <p>Keep the work running in your terminal. Read, search and navigate in your browser.</p>
+  <p><code>1,000+ turns</code> · <code>On-demand loading</code> · <code>Single file</code> · <code>Read-only</code></p>
+  <p><a href="https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.2">Download</a> · <a href="README.zh-CN.md">中文说明</a> · <a href="LICENSE">MIT License</a></p>
+</div>
 
-**Run the work in your terminal. Read the full story in your browser.**
+CodexView is a lightweight Codex CLI reader built for **hundreds to thousands of conversation turns**. Browse conversations, tool execution and Markdown / HTML reports from your machine or a remote server, find earlier decisions in context, and continue where you stopped reading.
 
-Codex CLI works in a terminal with limited room for reading and scrolling. After hours of work and hundreds of turns, finding an earlier decision, following the execution history, or picking up where you left off becomes difficult.
+| **Long sessions, readable by task** | **Find records in context** | **Small deployment, read-only sources** |
+| --- | --- | --- |
+| Navigate thousands of turns; load content on demand and jump by task number | Content search, task timestamps, reading recovery and report viewing | One file, Python standard library, no third-party runtime dependencies |
 
-CodexView is a lightweight, read-only reader for native Codex CLI sessions on your machine or a remote server. Open long conversations, navigate by task, and search for the context you need.
-
-**Single-file deployment · Built with Python · No third-party runtime dependencies**
-
-[中文说明](README.zh-CN.md) · [MIT License](LICENSE)
+**Scale validation:** a 2,000-turn synthetic session and a 744-task, approximately 600 MB real session have been exercised separately, covering task count and large-file workloads. [See validation scope and performance records](docs/performance.md#task-count-validation-2026-10-21).
 
 **Last updated: 2026-10-21 (Asia/Shanghai)** · Current version: `6.3.0-dev.2` · Development preview
 
-![CodexView session reader](docs/images/reader.png)
+![CodexView at turn 1,000 of a 2,000-turn synthetic session](docs/images/long-session.png)
 
 ## Why CodexView
 

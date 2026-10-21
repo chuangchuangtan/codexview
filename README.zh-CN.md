@@ -1,18 +1,22 @@
-# CodexView
+<div align="center">
+  <h1>CodexView</h1>
+  <p><strong>上千轮长会话，也能清晰回看。</strong></p>
+  <p>终端继续执行，浏览器按任务阅读、搜索、定位。</p>
+  <p><code>1,000+ 轮对话</code> · <code>按需加载</code> · <code>单文件部署</code> · <code>严格只读</code></p>
+  <p><a href="https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.2">下载当前版本</a> · <a href="README.md">English</a> · <a href="LICENSE">MIT 许可证</a></p>
+</div>
 
-**终端用来执行，浏览器用来读完整过程。**
+CodexView 是为**数百至上千轮长会话**设计的轻量 Codex CLI 阅读器。将本机或远程服务器上的对话、工具执行与 Markdown / HTML 报告整理为清晰的网页，方便回看完整过程、查找关键结论、接着上次的位置阅读。
 
-Codex CLI 的终端窗口和滚动阅读空间有限。任务持续数小时、会话积累数百轮后，回看过程、查找结论、重新接上思路都会变得困难。
+| **长会话，按任务读** | **找记录，带着上下文** | **部署轻，原始数据只读** |
+| --- | --- | --- |
+| 上千轮任务目录，内容按需加载，按任务号直达 | 正文搜索、任务时间、阅读位置恢复与报告阅读 | 单文件部署，Python 标准库运行，无第三方运行依赖 |
 
-CodexView 是轻量、只读的 Codex CLI 会话阅读器，将本机或远程服务器上的原生会话整理为可导航、可搜索的网页，让长会话也能快速打开、清晰浏览、准确定位。
-
-**单文件部署 · Python 实现 · 无需安装第三方依赖**
-
-[English](README.md) · [MIT 许可证](LICENSE)
+**规模验证：**已验证 2,000 轮合成会话，以及 744 个任务、约 600 MB 的真实会话；两组验证分别覆盖任务规模与大文件场景。[查看验证范围与性能记录](docs/performance.md#task-count-validation-2026-10-21)。
 
 **最近更新：2026-10-21（北京时间）** · 当前版本：`6.3.0-dev.2` · 开发预览版
 
-![CodexView 会话阅读界面](docs/images/reader.png)
+![CodexView 在 2,000 轮合成会话中定位到第 1,000 轮](docs/images/long-session.png)
 
 ## 为什么需要 CodexView
 

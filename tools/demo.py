@@ -1,5 +1,6 @@
 """Run a disposable, synthetic CodexView demo; never reads your Codex home."""
 import argparse
+from datetime import datetime, timedelta, timezone
 import json
 from pathlib import Path
 import runpy
@@ -16,7 +17,11 @@ def message(role, text, timestamp):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--port', type=int, default=17866)
+    parser.add_argument('--tasks', type=int, default=3,
+                        help='Tasks in the first synthetic session (minimum 3; try 2000 for scale checks)')
     args = parser.parse_args()
+    if args.tasks < 3:
+        parser.error('--tasks must be at least 3')
     module = runpy.run_path(str(ROOT / 'codexview'), run_name='codexview_demo')
     with tempfile.TemporaryDirectory(prefix='codexview-demo-') as temporary:
         home = Path(temporary).resolve()
@@ -28,7 +33,7 @@ def main():
             ('00000000-0000-4000-8000-000000000003', 'Review the read-only data boundary'),
         ]
         titles = []
-        for sid, title in sessions:
+        for session_number, (sid, title) in enumerate(sessions):
             records = [
                 message('user', 'Inspect the release pipeline and identify unnecessary work.', '2026-10-01T09:00:00.000Z'),
                 message('assistant', '## A smaller path to the first answer\n\nThe session shell loads first. Task metadata and execution evidence follow only when needed.\n\n- Native discovery stays enabled.\n- Source files stay read-only.\n- Review notes remain separate.\n\n```python\nwith open(source, "rb") as stream:\n    record = stream.readline()\n```', '2026-10-01T09:00:10.000Z'),
@@ -40,6 +45,20 @@ def main():
                 message('user', 'Keep the task list readable on a smaller screen.', '2026-10-01T09:10:00.000Z'),
                 message('assistant', 'The navigator uses three compact control rows. The remaining height belongs to tasks, with a mobile drawer and keyboard navigation.', '2026-10-01T09:10:10.000Z'),
             ]
+            if session_number == 0:
+                started = datetime(2026, 10, 1, 9, 15, tzinfo=timezone.utc)
+                for number in range(4, args.tasks + 1):
+                    timestamp = (started + timedelta(seconds=number)).isoformat()
+                    text = ('## Task %d / 第 %d 轮\n\n'
+                            'A synthetic long-session reply. 合成会话，用于检查任务规模与定位。\n\n'
+                            'Locate each task independently; execution evidence stays collapsed.\n\n'
+                            '| Check | Result |\n| --- | --- |\n'
+                            '| Native discovery | Enabled |\n| Source | Read-only |\n\n'
+                            '```text\nscale-marker-%04d\n```') % (number, number, number)
+                    records.extend([
+                        message('user', 'Review task %d / 检查第 %d 轮' % (number, number), timestamp),
+                        message('assistant', text, timestamp),
+                    ])
             path = directory / ('rollout-2026-10-01T09-00-00-' + sid + '.jsonl')
             path.write_text(''.join(json.dumps(record) + '\n' for record in records), encoding='utf-8')
             titles.append({'id': sid, 'thread_name': title})
@@ -49,6 +68,7 @@ def main():
         store = module['Store'](home, runtime, [])
         server = module['ThreadingHTTPServer'](('127.0.0.1', args.port), module['App'](store).handler())
         print('Synthetic demo: http://127.0.0.1:' + str(args.port), flush=True)
+        print('First session: %d tasks; generated data only, Native discovery enabled.' % args.tasks, flush=True)
         try:
             server.serve_forever()
         except KeyboardInterrupt:

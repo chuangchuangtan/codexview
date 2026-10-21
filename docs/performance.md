@@ -54,3 +54,51 @@ The 6.3.0-dev.2 candidate was compared against the deployed 6.3.0-dev version on
 | Representative section | 4.13 / 4.98 ms | 4.08 / 4.76 ms |
 
 The shell increased by 8,670 bytes (4.2%). The largest measured p95 increase was 0.93 ms. This verifies warm HTTP behavior only, not browser paint, cold indexing or first search. Session discovery, indexing and search implementations are unchanged; scroll bookmarks add no network requests.
+
+## Task-count validation (2026-10-21)
+
+The unchanged 6.3.0-dev.2 runtime was exercised with a generated 2,000-task Native session on macOS / Python 3.11.9. A task is a user request and its following responses; this fixture contains 4,001 user/assistant messages plus a small execution-evidence example. The JSONL is 1,506,058 bytes (about 1.44 MiB). This validates task-count handling; the approximately 600 MB real-session workload above is a separate test, not a 2,000-task / 600 MB claim.
+
+- Native discovery enabled; first, 1,000th and 2,000th task payloads checked.
+- Real-browser direct navigation to task 2,000, jump to task 1,000 and content-search navigation exercised.
+- At task 1,000: 3 task DOM nodes, 16 rendered navigator rows and no horizontal page overflow at the default desktop viewport.
+- Source SHA-256 and modification time unchanged after indexing and HTTP checks.
+
+| Local loopback measurement | Result |
+| --- | ---: |
+| First shell HTTP | 1.06 ms |
+| Cold manifest ready, including polling | 38.31 ms |
+| Warm shell median / p95, 25 samples | 1.13 / 1.29 ms |
+| Warm manifest median / p95, 25 samples | 3.29 / 3.62 ms |
+| First unique-marker search HTTP | 19.19 ms |
+| Cached marker search HTTP | 0.88 ms |
+
+These are task-count fixture measurements, not browser paint times or guarantees for other hardware, long individual messages or large tool output.
+
+Reproduce with disposable generated data (the tool does not read the user's Codex home):
+
+```sh
+python3 tools/demo.py --tasks 2000 --port 17871
+```
+
+Open `http://127.0.0.1:17871/session/00000000-0000-4000-8000-000000000001#task-2000`, let preparation finish, then run in another terminal:
+
+```sh
+python3 tools/benchmark.py http://127.0.0.1:17871 00000000-0000-4000-8000-000000000001 --query scale-marker-2000 --samples 25
+```
+
+The first search is cold only until that query has run; later requests use the existing search cache. Stop the demo with Ctrl+C to remove its generated session directory.
+
+## Product upgrades to evaluate
+
+These are proposals, not features included in the current preview. Keep Native discovery enabled, Codex-owned data read-only and the existing session-entry path free of additional scans.
+
+| Priority | User benefit | Lightweight approach and acceptance |
+| --- | --- | --- |
+| P1: New-content indicator and explicit Follow latest | Check a running session without losing the paragraph being reviewed | Poll only the active source metadata while visible; reuse append indexing; pause follow on manual reading; no background-tab polling or unsolicited scroll changes |
+| P1: Persistent task context | Know which task and time a long answer belongs to | A small current-task breadcrumb based on the existing bounded task window; no extra source requests; keyboard and mobile coverage |
+| P2: Faster first search | Find earlier answers in large histories sooner | Evaluate an optional background sidecar index; preserve Chinese substring behavior and short queries; detect SQLite/FTS capabilities and retain streaming fallback; bound CPU, memory and index size |
+| P2: Section windows inside exceptional tasks | Keep one huge tool-heavy task responsive | Render visible sections and bounded neighbors while preserving stable section IDs, search reveal, review state and reading anchors |
+| P3: Report navigation and image reading | Return to reports and inspect figures more comfortably | Collect report links from already loaded tasks, offer image zoom and document context, and retain configured file roots; no eager full-session report discovery |
+
+Useful implementation references: [VS Code sticky scroll](https://code.visualstudio.com/docs/terminal/shell-integration#_sticky-scroll) keeps command context visible above long output; the same interaction can inform task breadcrumbs. [SQLite FTS5](https://www.sqlite.org/fts5.html#the_trigram_tokenizer) offers substring-oriented trigram indexing, but its minimum-length and runtime-availability constraints must be tested before replacing the existing search path.
