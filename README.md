@@ -1,5 +1,7 @@
 # CodexView
 
+> This branch preserves the first report-reader preview. For the current version, see [main](https://github.com/chuangchuangtan/codexview) or download [6.3.0-dev.2](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.2).
+
 **Run the work in your terminal. Read the full story in your browser.**
 
 Codex CLI works in a terminal with limited room for reading and scrolling. After hours of work and hundreds of turns, finding an earlier decision, following the execution history, or picking up where you left off becomes difficult.
@@ -10,7 +12,7 @@ CodexView is a lightweight, read-only reader for native Codex CLI sessions on yo
 
 [中文说明](README.zh-CN.md) · [MIT License](LICENSE)
 
-**Last updated: 2026-10-21 (Asia/Shanghai)** · Latest source: `6.3.0-dev` · Stable download: `6.2.1`
+**Last updated: 2026-10-21 (Asia/Shanghai)** · Current version: `6.3.0-dev` · Development preview
 
 ![CodexView session reader](docs/images/reader.png)
 
@@ -35,21 +37,25 @@ Browser reading is independent of the Codex CLI execution instance. CodexView do
 
 ## Install
 
-The instructions below install **6.2.1 stable**, which does not include the new document reader.
+Install **6.3.0-dev (development preview)**, including Markdown and static HTML report reading.
+
+When upgrading, run `codexview stop` and back up review state before replacing the program.
 
 Supports Linux and macOS with Python 3.7 or newer. Use a maintained Python version for new installations. Windows has not been validated.
 
-Download **[codexview-6.2.1](https://github.com/chuangchuangtan/codexview/releases/download/v6.2.1/codexview-6.2.1)**, open a terminal in the download directory, and run:
+Download **[codexview-6.3.0-dev](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev/codexview-6.3.0-dev)**, open a terminal in the download directory, and run:
 
 ```sh
 mkdir -p "$HOME/.local/bin"
-cp codexview-6.2.1 "$HOME/.local/bin/codexview"
+cp codexview-6.3.0-dev "$HOME/.local/bin/codexview"
 chmod +x "$HOME/.local/bin/codexview"
 export PATH="$HOME/.local/bin:$PATH"
 codexview --version
 ```
 
-The final command should print `CodexView 6.2.1`.
+The final command should print `CodexView 6.3.0-dev`.
+
+Previous baseline: [6.2.1](https://github.com/chuangchuangtan/codexview/releases/tag/v6.2.1). Use each Release’s own files and feature list.
 
 **Keep PATH available in new terminals:** choose the commands for your shell. Run `echo "$SHELL"` if you are unsure.
 
@@ -125,14 +131,14 @@ Use Cmd/Ctrl F to search session content and `/` to filter task titles. Refresh 
 
 ## 2026-10-21 update: document reader (6.3.0-dev)
 
-These additions are available on `main` and remain under development validation:
+These features are included in the matching development-preview release:
 
 - **Markdown reports:** open `.md` and `.markdown` links from a conversation in a separate tab, with headings, tables, code and local images.
 - **HTML galleries:** preview static `.html` and `.htm` reports with relative local images and CSS.
 - **Read / Source and Refresh:** keep the conversation available, inspect source text, and reload saved changes manually.
 - **On-demand, read-only loading:** read reports only when opened, within explicitly configured directories. Native session discovery stays enabled; report scanning is not added to session indexing.
 
-With a program **built from the 6.3.0-dev source**, enable a report directory:
+After installing **6.3.0-dev**, enable a project directory for report reading:
 
 ```sh
 codexview serve --host 0.0.0.0 --port 80 --file-root /path/to/project/reports
@@ -152,8 +158,8 @@ This is a **public preview**. First-time search of very large files can take sev
 
 ## Other downloads
 
-- [ZIP](https://github.com/chuangchuangtan/codexview/releases/download/v6.2.1/codexview-6.2.1.zip) / [tar.gz](https://github.com/chuangchuangtan/codexview/releases/download/v6.2.1/codexview-6.2.1.tar.gz): full source and documentation.
-- [SHA256SUMS](https://github.com/chuangchuangtan/codexview/releases/download/v6.2.1/SHA256SUMS): SHA-256 checksums for release assets.
+- [ZIP](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev/codexview-6.3.0-dev.zip) / [tar.gz](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev/codexview-6.3.0-dev.tar.gz): full source and documentation.
+- [SHA256SUMS](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev/SHA256SUMS): SHA-256 checksums for release assets.
 
 Released under the [MIT License](LICENSE). See [Security](SECURITY.md) and [Contributing](CONTRIBUTING.md) for more information.
 
