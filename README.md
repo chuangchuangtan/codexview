@@ -12,7 +12,7 @@ A lightweight, read-only viewer for Codex CLI sessions. Browse server conversati
 
 Supports Linux and macOS with Python 3.7 or newer. Use a maintained Python version for new installations. Windows has not been validated.
 
-Download **`codexview-6.2.1`**, open a terminal in the download directory, and run:
+Download **[codexview-6.2.1](https://github.com/chuangchuangtan/codexview/releases/download/v6.2.1/codexview-6.2.1)**, open a terminal in the download directory, and run:
 
 ```sh
 mkdir -p "$HOME/.local/bin"
@@ -106,8 +106,8 @@ This is a **public preview**. First-time search of very large files can take sev
 
 ## Other downloads
 
-- `codexview-6.2.1.zip` / `.tar.gz`: full source and documentation.
-- `SHA256SUMS`: SHA-256 checksums for release assets.
+- [ZIP](https://github.com/chuangchuangtan/codexview/releases/download/v6.2.1/codexview-6.2.1.zip) / [tar.gz](https://github.com/chuangchuangtan/codexview/releases/download/v6.2.1/codexview-6.2.1.tar.gz): full source and documentation.
+- [SHA256SUMS](https://github.com/chuangchuangtan/codexview/releases/download/v6.2.1/SHA256SUMS): SHA-256 checksums for release assets.
 
 Released under the [MIT License](LICENSE). See [Security](SECURITY.md) and [Contributing](CONTRIBUTING.md) for more information.
 

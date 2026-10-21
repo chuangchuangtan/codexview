@@ -12,7 +12,7 @@
 
 支持 Linux 和 macOS，需要 Python 3.7 或更新版本。推荐使用仍受维护的 Python。Windows 暂未验证。
 
-下载发布文件 **`codexview-6.2.1`**，在下载目录打开终端，依次执行：
+下载发布文件 **[codexview-6.2.1](https://github.com/chuangchuangtan/codexview/releases/download/v6.2.1/codexview-6.2.1)**，在下载目录打开终端，依次执行：
 
 ```sh
 mkdir -p "$HOME/.local/bin"
@@ -106,8 +106,8 @@ Codex 原始 session、rollout、config、auth 数据严格只读，Native 会�
 
 ## 其他下载
 
-- `codexview-6.2.1.zip` / `.tar.gz`：完整源码和文档。
-- `SHA256SUMS`：发布文件的 SHA-256 校验值。
+- [ZIP](https://github.com/chuangchuangtan/codexview/releases/download/v6.2.1/codexview-6.2.1.zip) / [tar.gz](https://github.com/chuangchuangtan/codexview/releases/download/v6.2.1/codexview-6.2.1.tar.gz)：完整源码和文档。
+- [SHA256SUMS](https://github.com/chuangchuangtan/codexview/releases/download/v6.2.1/SHA256SUMS)：发布文件的 SHA-256 校验值。
 
 采用 [MIT License](LICENSE)。更多信息：[安全说明](SECURITY.md) · [参与贡献](CONTRIBUTING.md)。
 
