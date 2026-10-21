@@ -1,6 +1,6 @@
 # Changelog
 
-## 6.3.0-dev — generated report reader
+## 6.3.0-dev — 2026-10-21 (Asia/Shanghai) — generated report reader
 
 - Preserve 6.2.1 with a stable baseline tag and rollback record.
 - Open linked Markdown and static HTML reports in an independent reader, on demand.

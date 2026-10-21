@@ -1,6 +1,8 @@
 # Generated report reader (6.3.0 development)
 
-The published 6.2.1 release remains the stable baseline. This feature is developed separately on `codex/document-reader`.
+The published 6.2.1 release remains the stable baseline. The 6.3.0-dev source is available on `main`; its implementation history is also preserved on `codex/document-reader`.
+
+Last updated: 2026-10-21 (Asia/Shanghai).
 
 Codex sessions often point to Markdown reports and HTML galleries saved on the server. Open these links in a separate browser tab while keeping the conversation available. Markdown supports headings, tables, code blocks and local report links. HTML uses an isolated, static preview; Read / Source and Refresh are available in the surrounding reader.
 

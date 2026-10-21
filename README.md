@@ -10,6 +10,8 @@ CodexView is a lightweight, read-only reader for native Codex CLI sessions on yo
 
 [中文说明](README.zh-CN.md) · [MIT License](LICENSE)
 
+**Last updated: 2026-10-21 (Asia/Shanghai)** · Latest source: `6.3.0-dev` · Stable download: `6.2.1`
+
 ![CodexView session reader](docs/images/reader.png)
 
 ## Why CodexView
@@ -32,6 +34,8 @@ Keep one Codex CLI instance responsible for executing a session. Reading its his
 Browser reading is independent of the Codex CLI execution instance. CodexView does not enable multiple Codex instances to operate on the same session, and it never executes commands found in conversation text.
 
 ## Install
+
+The instructions below install **6.2.1 stable**, which does not include the new document reader.
 
 Supports Linux and macOS with Python 3.7 or newer. Use a maintained Python version for new installations. Windows has not been validated.
 
@@ -119,9 +123,24 @@ Directory priority: `--codex-home` → `CODEX_HOME` environment variable → `~/
 
 Use Cmd/Ctrl F to search session content and `/` to filter task titles. Refresh checks appended records. Task timestamps use your browser's local timezone.
 
-## Generated reports (development)
+## 2026-10-21 update: document reader (6.3.0-dev)
 
-The `codex/document-reader` branch adds on-demand Markdown and static HTML reading with explicit `--file-root` directories. The published 6.2.1 download remains unchanged. See [report reader setup and limits](docs/document-reader.md).
+These additions are available on `main` and remain under development validation:
+
+- **Markdown reports:** open `.md` and `.markdown` links from a conversation in a separate tab, with headings, tables, code and local images.
+- **HTML galleries:** preview static `.html` and `.htm` reports with relative local images and CSS.
+- **Read / Source and Refresh:** keep the conversation available, inspect source text, and reload saved changes manually.
+- **On-demand, read-only loading:** read reports only when opened, within explicitly configured directories. Native session discovery stays enabled; report scanning is not added to session indexing.
+
+With a program **built from the 6.3.0-dev source**, enable a report directory:
+
+```sh
+codexview serve --host 0.0.0.0 --port 80 --file-root /path/to/project/reports
+```
+
+Repeat `--file-root` for additional directories. Stop an existing instance before changing startup options. File reading is disabled by default. HTML scripts, forms and external resources are disabled; JavaScript-dependent applications are not supported.
+
+**Published 6.2.1 assets remain unchanged**, with the additional `stable-6.2.1-20261021` baseline tag. See [report reader setup and limits](docs/document-reader.md), [stable baseline](docs/baselines/6.2.1.md) and [changelog](CHANGELOG.md).
 
 ## Data safety and upgrades
 

@@ -10,6 +10,8 @@ CodexView 是轻量、只读的 Codex CLI 会话阅读器，将本机或远程�
 
 [English](README.md) · [MIT 许可证](LICENSE)
 
+**最近更新：2026-10-21（北京时间）** · 最新源码：`6.3.0-dev` · 稳定下载：`6.2.1`
+
 ![CodexView 会话阅读界面](docs/images/reader.png)
 
 ## 为什么需要 CodexView
@@ -32,6 +34,8 @@ CodexView 是轻量、只读的 Codex CLI 会话阅读器，将本机或远程�
 浏览器查看与 Codex CLI 的执行实例相互独立。CodexView 不提供多个 Codex 实例同时操作同一会话的能力，也不将会话中的文本当作命令执行。
 
 ## 安装
+
+以下安装的是 **6.2.1 稳定版**，暂不包含新增的文档阅读功能。
 
 支持 Linux 和 macOS，需要 Python 3.7 或更新版本。推荐使用仍受维护的 Python。Windows 暂未验证。
 
@@ -119,9 +123,24 @@ codexview serve --host 0.0.0.0 --port 80 --codex-home /path/to/.codex
 
 Cmd/Ctrl F 搜索会话内容，`/` 筛选任务标题。点击 Refresh 检查新追加的记录。任务时间按浏览器本地时区显示。
 
-## 生成报告阅读（开发中）
+## 2026-10-21 更新：文档阅读（6.3.0-dev）
 
-`codex/document-reader` 分支新增按需阅读 Markdown 和静态 HTML 的能力，通过 `--file-root` 指定可读报告目录。已发布的 6.2.1 下载包保持不变。参见[文档阅读配置与边界](docs/document-reader.md)。
+本次新增功能已同步至 `main`，仍处于开发版验证阶段：
+
+- **Markdown 报告**：点击会话中的 `.md`、`.markdown` 链接，在独立标签页阅读标题、表格、代码和本地图片。
+- **HTML 图库**：支持 `.html`、`.htm` 静态预览及相对路径引用的本地图片、CSS。
+- **阅读与源码切换**：保留原会话页面，支持查看文件源码和手动刷新已保存的内容。
+- **按需、只读加载**：仅在打开报告时读取指定目录，Native 会话发现保持开启，不将报告扫描加入会话索引。
+
+使用 **6.3.0-dev 源码构建的程序**时，指定可读报告目录：
+
+```sh
+codexview serve --host 0.0.0.0 --port 80 --file-root /path/to/project/reports
+```
+
+可重复添加 `--file-root`；更改启动参数前先停止现有服务。未指定目录时，文件阅读默认关闭。HTML 禁用脚本、表单和外部资源，暂不支持依赖 JavaScript 的交互页面。
+
+**6.2.1 稳定发布包保持不变**，并保留 `stable-6.2.1-20261021` 基线标签。更多信息：[文档阅读配置与边界](docs/document-reader.md) · [稳定基线记录](docs/baselines/6.2.1.md) · [更新日志](CHANGELOG.md)。
 
 ## 数据安全与升级
 
