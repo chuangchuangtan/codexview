@@ -103,3 +103,11 @@ class DocumentTests(unittest.TestCase):
         wrapper=NS['document_html']('</script>','fixture','733')
         self.assertNotIn('"path": "</script>"',wrapper)
         self.assertIn('"task": "733"',wrapper)
+
+    def test_image_reader_and_bounded_html_image_list(self):
+        image=self.root/'chart.png';image.write_bytes(b'\x89PNG\r\n\x1a\nfixture');before=image.read_bytes()
+        status,body,_=self.api(image);self.assertEqual(status,200);data=json.loads(body);self.assertEqual(data['kind'],'image');self.assertEqual(data['text'],'');self.assertEqual(self.get(data['raw_url'])[1],before)
+        data=json.loads(self.api(self.html,sid=fixtures.SID,task='1')[1]);self.assertEqual(len(data['images']),1);self.assertIn('chart.png',data['images'][0]);self.assertIn('task=1',data['images'][0])
+        wrapper=self.get('/file?'+urlencode({'path':str(image),'from':str(self.html),'sid':fixtures.SID,'task':'1'}))[1].decode();self.assertIn('fileImages',wrapper);self.assertIn('chart.png',wrapper)
+        self.assertEqual(image.read_bytes(),before)
+        self.html.write_text('<img src="../../outside.png"><img src="https://evil.example/image.png">');self.assertEqual(json.loads(self.api(self.html)[1])['images'],[])

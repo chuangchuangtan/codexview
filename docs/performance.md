@@ -20,12 +20,10 @@ These are acceptance targets, not universal guarantees or completed 1,000-sessio
 
 ## Remaining work in priority order
 
-1. **Representative fixtures and repeatable browser benchmark.** Add multiple supported CLI schema versions, tool families, empty sessions, long Unicode output and synthetic large sessions. Separate first visible text from full task hydration, and include keyboard/mobile acceptance.
-2. **Precise incremental updates.** Stat-based freshness notifications, an explicit follow-latest switch, no unsolicited scroll changes. Maintain task and review identity across appends/restarts.
-3. **Optional incremental search index.** Benchmark SQLite FTS or compact sidecar postings against sequential scan. Build in the background, bound disk and memory, index only readable text, support cancellation, and never put index building on session entry.
-4. **Turn-aware adapter and subagent navigation.** Migration fixtures must prove stable review mapping. Never silently reinterpret old task IDs.
-5. **Large-task virtualization.** The current bound is tasks, not section nodes inside one exceptional task. Add section-window rendering and record text limits based on measured worst cases.
-6. **Distribution.** Expand synthetic public screenshots, supported installation artifacts, authenticated-proxy recipes, Linux/macOS matrix, cache eviction and repair tools. Validate release contents before publishing.
+1. Expand representative CLI schema/tool fixtures and repeatable first-paint browser benchmarks, including mobile gestures and slow storage.
+2. Evaluate compact postings for faster cold queries without changing Unicode substring semantics; the current optional sidecar remains sequential.
+3. Add turn-aware migration fixtures before changing task identity or review mappings.
+4. Expand authenticated-proxy recipes, distribution validation and user-facing cache maintenance.
 
 Avoid unmeasured features in the first-view path: full-session attention scans, eager previews for every tool call, global activity statistics and forced Native discovery shutdown.
 
@@ -89,16 +87,33 @@ python3 tools/benchmark.py http://127.0.0.1:17871 00000000-0000-4000-8000-000000
 
 The first search is cold only until that query has run; later requests use the existing search cache. Stop the demo with Ctrl+C to remove its generated session directory.
 
-## Product upgrades to evaluate
+## P1–P3 implementation in 6.3.0-dev.3
 
-These are proposals, not features included in the current preview. Keep Native discovery enabled, Codex-owned data read-only and the existing session-entry path free of additional scans.
+The following upgrades are implemented. Native discovery remains enabled and Codex-owned data stays read-only. See [controls and limits](continuous-reading.md).
 
 | Priority | User benefit | Lightweight approach and acceptance |
 | --- | --- | --- |
 | P1: New-content indicator and explicit Follow latest | Check a running session without losing the paragraph being reviewed | Poll only the active source metadata while visible; reuse append indexing; pause follow on manual reading; no background-tab polling or unsolicited scroll changes |
 | P1: Persistent task context | Know which task and time a long answer belongs to | A small current-task breadcrumb based on the existing bounded task window; no extra source requests; keyboard and mobile coverage |
-| P2: Faster first search | Find earlier answers in large histories sooner | Evaluate an optional background sidecar index; preserve Chinese substring behavior and short queries; detect SQLite/FTS capabilities and retain streaming fallback; bound CPU, memory and index size |
-| P2: Section windows inside exceptional tasks | Keep one huge tool-heavy task responsive | Render visible sections and bounded neighbors while preserving stable section IDs, search reveal, review state and reading anchors |
-| P3: Report navigation and image reading | Return to reports and inspect figures more comfortably | Collect report links from already loaded tasks, offer image zoom and document context, and retain configured file roots; no eager full-session report discovery |
+| P2: Faster first search | Find earlier answers in large histories sooner | Explicit compressed text sidecar; Chinese substrings and short queries retained; append updates/cancellation, 128 MiB per cache, two ready caches plus one temporary build; streaming fallback; no SQLite dependency |
+| P2: Section windows inside exceptional tasks | Keep one huge tool-heavy task responsive | 24-section chunks for tasks over 72 sections; normally five mounted chunks plus visible/focused/search targets; stable section IDs and search/bookmark reveal |
+| P3: Report navigation and image reading | Return to reports and inspect figures more comfortably | Collect up to 120 loaded report links; local image zoom and up to 80 HTML image links with report context; configured file roots retained |
 
 Useful implementation references: [VS Code sticky scroll](https://code.visualstudio.com/docs/terminal/shell-integration#_sticky-scroll) keeps command context visible above long output; the same interaction can inform task breadcrumbs. [SQLite FTS5](https://www.sqlite.org/fts5.html#the_trigram_tokenizer) offers substring-oriented trigram indexing, but its minimum-length and runtime-availability constraints must be tested before replacing the existing search path.
+
+## Continuous reader comparison (2026-10-21)
+
+Compared 6.3.0-dev.3 with the preserved 6.3.0-dev.2 on the same 755-task, 615,727,863-byte Native session and Python 3.7 server. Each endpoint has 100 alternating loopback samples; separate runtimes, Native discovery enabled, copied review state. These are HTTP timings, not browser paint times.
+
+| Endpoint | dev.2 median / p95 | dev.3 median / p95 |
+| --- | ---: | ---: |
+| Session shell | 15.36 / 16.54 ms | 16.02 / 17.63 ms |
+| Warm manifest | 15.42 / 19.46 ms | 16.76 / 19.38 ms |
+| Task 632 | 3.70 / 4.29 ms | 4.07 / 5.03 ms |
+| Representative section | 3.78 / 4.35 ms | 4.13 / 4.47 ms |
+
+The shell grew by 19,791 bytes (9.3%); all endpoint p95 values remain below the existing targets. Cold indexing was not re-certified; its algorithm and persisted manifest version are unchanged. Optional relationship, report and cache reads do not run during entry.
+
+For three distinct queries (one English filename, one Chinese phrase, one absent marker), baseline streaming took 6.51 / 5.59 / 6.83 seconds; prepared compressed-cache queries took 3.71 / 3.55 / 2.82 seconds, with identical ordered results. This is one query comparison per case, not a percentile claim. Explicit cache preparation took 11.35 seconds and covered the complete source within the 128 MiB cap. Cache preparation is not part of ordinary entry or query latency; repeating the same query uses the existing query-result memory cache. Performance can vary with storage contention and oversize records.
+
+Browser checks on a generated 2,000-task session exercised five successive native Page Down actions, followed by five Page Up actions. Recorded scroll positions advanced and reversed by 680 px per page without rewinding after hydration; three task DOM nodes remained. Separate DOM integration covers user movement during an 80 ms pending payload, deep section 479 of a 480-section task, visible-only polling, follow pause, reports and image zoom. Synthetic append testing exercised a new task arriving while Follow latest was active. These checks do not certify every possible image layout or touchscreen device.

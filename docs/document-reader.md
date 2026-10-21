@@ -1,6 +1,6 @@
 # Generated report reader (6.3.0 development)
 
-Download the matching [6.3.0-dev.2 preview](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.2). The published 6.2.1 files remain available as the previous stable baseline.
+Download the matching [6.3.0-dev.3 preview](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.3). The published 6.2.1 files remain available as the previous stable baseline.
 
 Last updated: 2026-10-21 (Asia/Shanghai).
 
@@ -35,6 +35,8 @@ Task density and reading-width presets are available in More actions. Sidebar an
 - Preview limits: Markdown 2 MiB, HTML 4 MiB, CSS 1 MiB and each raster image 16 MiB. Oversize files produce an explicit error; contents are never silently truncated.
 - Refresh reads saved content on demand. It does not follow unsaved editor buffers.
 
-This implementation adds no third-party runtime dependencies and does not change session indexing or search algorithms.
+The report reader adds no third-party runtime dependencies or report scans to session indexing. Version 6.3.0-dev.3 also adds optional search acceleration independently of report loading.
+
+The session **Reports** menu collects up to 120 unique links from tasks already loaded. No full-session report scan is performed. Select a local image in Markdown to open a zoomable viewer. Static HTML has an **Images** menu for up to 80 local images; opening one retains a return link to the report and originating task. Raster files use the same configured roots, read-only path checks and 16 MiB limit. See [continuous reading](continuous-reading.md).
 
 Sandbox references: [MDN iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe) and [CSP sandbox](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/sandbox).

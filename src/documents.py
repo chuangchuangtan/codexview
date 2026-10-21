@@ -7,6 +7,8 @@ DOCUMENT_TYPES={'.md':'text/plain; charset=utf-8','.markdown':'text/plain; chars
                 '.html':'text/html; charset=utf-8','.htm':'text/html; charset=utf-8'}
 RESOURCE_TYPES={'.css':'text/css; charset=utf-8','.png':'image/png','.jpg':'image/jpeg',
                 '.jpeg':'image/jpeg','.gif':'image/gif','.webp':'image/webp','.ico':'image/x-icon'}
+IMAGE_TYPES={k:v for k,v in RESOURCE_TYPES.items() if k!='.css'}
+VIEW_TYPES=dict(DOCUMENT_TYPES,**IMAGE_TYPES)
 REPORT_CSP="default-src 'none'; script-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; sandbox allow-top-navigation-by-user-activation"
 
 class ReportError(ValueError):
@@ -46,7 +48,7 @@ class ReportFiles:
         raise ReportError('This file is outside the configured --file-root directories.')
     def read(self,value,sid=None,store=None,document=False):
         index,rel,path=self.locate(value,sid,store)
-        suffix=path.suffix.lower();types=DOCUMENT_TYPES if document else dict(DOCUMENT_TYPES,**RESOURCE_TYPES)
+        suffix=path.suffix.lower();types=VIEW_TYPES if document else dict(DOCUMENT_TYPES,**RESOURCE_TYPES)
         if suffix not in types:raise ReportError('Only Markdown, HTML, CSS and supported raster images can be read.',415)
         limit=(2 if suffix in ('.md','.markdown') else 4 if suffix in ('.html','.htm') else 1 if suffix=='.css' else 16)*1024*1024
         # Walk from / using directory descriptors: no symlink or FIFO/device traversal,
@@ -73,7 +75,7 @@ class ReportFiles:
         finally:
             if fd is not None:os.close(fd)
         raw='/files/raw/'+str(index)+'/'+urllib.parse.quote(rel.as_posix(),safe='/')
-        return {'path':str(path),'name':path.name,'kind':'html' if suffix in ('.html','.htm') else 'markdown',
+        return {'path':str(path),'name':path.name,'kind':'html' if suffix in ('.html','.htm') else 'image' if suffix in IMAGE_TYPES else 'markdown',
                 'type':types[suffix],'raw_url':raw,'size':len(data),'modified_ns':str(st.st_mtime_ns),'relative_path':rel.as_posix(),'root_name':self.roots[index].name},bytes(data)
     def raw_path(self,index,relative):
         if index<0 or index>=len(self.roots):raise ReportError('Unknown report directory.',404)
@@ -88,7 +90,7 @@ class StaticReport(HTMLParser):
     void={'img','br','hr','link','col'}
     blocked={'script','iframe','object','embed','svg','math','template','noscript','textarea','xmp','plaintext'}
     attrs=set('id class title style lang dir role alt width height colspan rowspan scope datetime start reversed open media'.split())
-    def __init__(self,raw_url,document_link=None):self.document_link=document_link;super().__init__(convert_charrefs=True);self.base=raw_url;self.out=[];self.skip=[];self.in_style=False
+    def __init__(self,raw_url,document_link=None):self.document_link=document_link;super().__init__(convert_charrefs=True);self.base=raw_url;self.images=[];self.out=[];self.skip=[];self.in_style=False
     def url(self,value,kind):
         u=urllib.parse.urlsplit(value)
         if u.scheme or u.netloc or u.query or '\\' in value:return None
@@ -99,7 +101,7 @@ class StaticReport(HTMLParser):
         prefix='/'.join(self.base.split('/')[:4])+'/'
         if not target.startswith(prefix) or any(p.startswith('.') for p in target[len(prefix):].split('/')):return None
         suffix=Path(target).suffix.lower()
-        if suffix not in (RESOURCE_TYPES if kind=='asset' else DOCUMENT_TYPES):return None
+        if suffix not in (RESOURCE_TYPES if kind=='asset' else VIEW_TYPES):return None
         return urllib.parse.quote(target,safe='/')+('#'+urllib.parse.quote(u.fragment) if u.fragment else '')
     def handle_starttag(self,tag,attrs):
         if self.skip:
@@ -118,6 +120,7 @@ class StaticReport(HTMLParser):
         if tag=='img':
             src=self.url(values.get('src',''),'asset')
             if not src:return
+            if Path(urllib.parse.urlsplit(src).path).suffix.lower() in IMAGE_TYPES and len(self.images)<80:self.images.append(src)
             clean.extend([('src',src),('loading','lazy'),('decoding','async')])
         elif tag=='a':
             href=self.url(values.get('href',''),'link')
@@ -164,8 +167,8 @@ def report_navigation(files,target,sid='',task=''):
     if report_task(task):query['task']=report_task(task)
     return '/file?'+urllib.parse.urlencode(query)+('#'+parsed.fragment if parsed.fragment else '')
 
-def document_html(value,sid='',task=''):
-    model=json.dumps({'path':value,'sid':sid,'task':report_task(task)},ensure_ascii=False).replace('<','\\u003c')
+def document_html(value,sid='',task='',from_path=''):
+    model=json.dumps({'path':value,'sid':sid,'task':report_task(task),'from':str(from_path)[:4096]},ensure_ascii=False).replace('<','\\u003c')
     return '''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Report · CodexView</title><style>'''+CSS+'''
 body{margin:0}.filebar{position:sticky;top:0;z-index:4;display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--bg);flex-wrap:wrap}.filebar button,.filebar a{font:inherit;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--p);color:inherit;text-decoration:none;cursor:pointer}.filebar button[aria-pressed=true]{outline:2px solid var(--b)}.filebrand{font-size:12px;color:var(--m)}.filename{font-size:16px;overflow-wrap:anywhere}.fileidentity{display:grid;gap:3px;min-width:0}.filecrumb{display:flex;align-items:center;gap:8px;flex-basis:100%;font-size:12px;color:var(--m);min-width:0}.filepath{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex:1}.filebar .copy-path{border:0;padding:2px 6px;font-size:12px}.filemessage{padding:12px 24px;margin:0;color:var(--m);font-size:12px}.file-layout{display:block}.file-layout.outline-open{display:grid;grid-template-columns:220px minmax(0,1fr)}.filecontent{width:100%;max-width:1000px;min-width:0;box-sizing:border-box;margin:auto;padding:18px 28px 60px}.filecontent pre{white-space:pre-wrap;overflow-wrap:anywhere}.filecontent h1,.filecontent h2,.filecontent h3,.filecontent h4,.filecontent h5,.filecontent h6{scroll-margin-top:150px}.fileframe{display:block;width:100%;height:calc(100dvh - 160px);border:0;background:white;grid-column:1/-1}.filehidden{display:none!important}.fileoutline{position:sticky;align-self:start;top:118px;max-height:calc(100dvh - 140px);overflow:auto;border-right:1px solid var(--line);padding:14px 12px}.fileoutline b{display:block;font-size:12px;margin:0 8px 10px;color:var(--m)}.fileoutline a{display:block;padding:6px 8px;color:var(--m);font-size:13px;line-height:1.45;overflow-wrap:anywhere;text-decoration:none;border-radius:6px}.fileoutline a:hover,.fileoutline a:focus-visible{color:var(--t);background:var(--p)}.fileoutline a[data-depth="2"]{padding-left:20px}.fileoutline a[data-depth="3"]{padding-left:30px}.fileerror{margin:24px 0;padding:20px;border:1px solid var(--line);border-radius:12px;background:var(--p);line-height:1.7}@media(max-width:700px){.filecontent{padding:12px 16px}.filebar{gap:8px;padding:10px}.filebar button,.filebar a{font-size:12px}.file-layout.outline-open{display:block}.fileoutline{position:fixed;z-index:5;top:130px;left:12px;right:12px;max-height:60dvh;background:var(--bg);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px #0002}.filename{font-size:14px}}
-</style></head><body><header class="filebar"><a id="fileBack" href="/">← Sessions</a><div class="fileidentity"><span class="filebrand">CodexView · Report</span><strong id="fileName" class="filename">Report</strong></div><span class="grow"></span><button id="fileOutlineToggle" aria-expanded="false" hidden>Contents</button><button id="fileRendered" aria-pressed="true">Read</button><button id="fileSource" aria-pressed="false">Source</button><button id="fileRefresh">↻ Refresh</button><button id="fileTheme" aria-label="Toggle theme">◐</button><div class="filecrumb"><span id="filePath" class="filepath"></span><button id="fileCopyPath" class="copy-path">Copy path</button></div></header><p id="fileMessage" class="filemessage" role="status">Loading report…</p><div id="fileLayout" class="file-layout"><aside id="fileOutline" class="fileoutline" hidden><b>On this page</b><nav id="fileOutlineLinks" aria-label="Document contents"></nav></aside><main id="fileContent" class="filecontent md"></main><iframe id="fileFrame" class="fileframe filehidden" sandbox="allow-top-navigation-by-user-activation" referrerpolicy="no-referrer" title="Isolated static HTML report"></iframe></div><script id="fileModel" type="application/json">'''+model+'''</script><script>'''+__ASSET_MARKDOWN__+'\n'+__ASSET_FILE_JS__+'''</script></body></html>'''
+</style></head><body><header class="filebar"><a id="fileBack" href="/">← Sessions</a><div class="fileidentity"><span class="filebrand">CodexView · Report</span><strong id="fileName" class="filename">Report</strong></div><span class="grow"></span><button id="fileOutlineToggle" aria-expanded="false" hidden>Contents</button><button id="fileImages" hidden>Images</button><button id="fileRendered" aria-pressed="true">Read</button><button id="fileSource" aria-pressed="false">Source</button><button id="fileRefresh">↻ Refresh</button><button id="fileTheme" aria-label="Toggle theme">◐</button><div class="filecrumb"><span id="filePath" class="filepath"></span><button id="fileCopyPath" class="copy-path">Copy path</button></div></header><p id="fileMessage" class="filemessage" role="status">Loading report…</p><div id="fileImageLinks" class="file-image-links" hidden></div><div id="fileLayout" class="file-layout"><aside id="fileOutline" class="fileoutline" hidden><b>On this page</b><nav id="fileOutlineLinks" aria-label="Document contents"></nav></aside><main id="fileContent" class="filecontent md"></main><iframe id="fileFrame" class="fileframe filehidden" sandbox="allow-top-navigation-by-user-activation" referrerpolicy="no-referrer" title="Isolated static HTML report"></iframe></div><script id="fileModel" type="application/json">'''+model+'''</script><script>'''+__ASSET_MARKDOWN__+'\n'+__ASSET_FILE_JS__+'''</script></body></html>'''

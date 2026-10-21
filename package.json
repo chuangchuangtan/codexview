@@ -2,12 +2,12 @@
   "name": "codexview-dev",
   "private": true,
   "scripts": {
-    "test": "node tests/test_frontend.mjs && node tests/test_ui_dom.cjs && node tests/test_file_dom.cjs && node tests/test_reading_dom.cjs"
+    "test": "node tests/test_frontend.mjs && node tests/test_ui_dom.cjs && node tests/test_file_dom.cjs && node tests/test_reading_dom.cjs && node tests/test_continuous_dom.cjs"
   },
   "devDependencies": {
     "jsdom": "30.1.3"
   },
-  "version": "6.3.0-dev.2",
+  "version": "6.3.0-dev.3",
   "license": "MIT",
   "description": "Development tests for the dependency-free CodexView runtime",
   "engines": {

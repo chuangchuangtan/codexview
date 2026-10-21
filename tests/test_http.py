@@ -67,3 +67,13 @@ class HttpTests(unittest.TestCase):
         status,body,_=self.request('GET','/api/session/'+SID+'/task/'+tid)
         self.assertEqual(status,200);self.assertEqual(json.loads(body)['started_at'],first['timestamp'])
         self.assertEqual(self.path.read_bytes(),before)
+
+    def test_watch_and_search_cache_http_boundaries(self):
+        before=self.store.metrics.copy();status,body,_=self.request('GET','/api/session/'+SID+'/watch');self.assertEqual(status,200);self.assertIn('token',json.loads(body));self.assertEqual(self.store.metrics,before)
+        self.assertEqual(self.request('GET','/api/session/'+SID+'/related')[0],200)
+        url='/api/session/'+SID+'/search-cache';self.assertFalse(json.loads(self.request('GET',url)[1])['ready']);self.assertEqual(self.request('POST',url,'{}',{'Origin':'http://evil.example'})[0],403);self.assertEqual(self.store.search_builds,{})
+        self.ready();self.assertEqual(self.request('POST',url,'{}')[0],200)
+        for _ in range(200):
+            if self.store.search_cache_status(SID)['state'] not in ('queued','building'):break
+            time.sleep(.01)
+        self.assertTrue(json.loads(self.request('GET',url)[1])['ready']);self.assertEqual(self.request('POST',url+'/cancel','{}')[0],200)

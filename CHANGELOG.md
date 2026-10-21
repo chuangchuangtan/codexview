@@ -1,5 +1,15 @@
 # Changelog
 
+## 6.3.0-dev.3 — 2026-10-21 (Asia/Shanghai) — continuous reading
+
+- Preserve evicted task heights, preload adjacent prose and remove delayed navigation corrections to keep scrolling continuous.
+- Add section chunks inside exceptional tasks, preserving deep search targets and paragraph recovery.
+- Add visible-page freshness notifications, explicit Follow latest and sticky task context.
+- Add opt-in compressed search sidecars with cancellation, append updates, a 128 MiB per-cache limit and streaming fallback. Retain two ready caches.
+- Collect links from loaded tasks; add local image zoom and HTML image navigation with report return context.
+- Show parent/fork relationships only when explicitly declared in bounded Native metadata.
+- Preserve the previous preview with a baseline tag and deployment backup; keep Native discovery and Codex-owned source reads unchanged.
+
 ## 6.3.0-dev.2 — 2026-10-21 (Asia/Shanghai) — reading refinement
 
 - Restore per-session task and paragraph positions using bounded browser-local bookmarks; honor explicit task links and invalidate stale section positions.
