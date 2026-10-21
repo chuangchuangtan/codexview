@@ -1,0 +1,47 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*'
+permissions:
+  contents: read
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify release version
+        shell: bash
+        run: |
+          version=$(python3 -c "import runpy; print(runpy.run_path('codexview', run_name='release')['VERSION'])")
+          test "$GITHUB_REF_NAME" = "v$version"
+          test -f "docs/releases/$GITHUB_REF_NAME.md"
+          echo "CODEXVIEW_VERSION=$version" >> "$GITHUB_ENV"
+      - name: Build and test
+        run: |
+          python3 tools/build.py
+          git diff --exit-code -- codexview
+          python3 -m unittest discover -s tests -v
+          python3 tools/package_release.py
+          cd dist
+          sha256sum -c SHA256SUMS
+      - name: Publish public preview
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "dist/codexview-$CODEXVIEW_VERSION" \
+            "dist/codexview-$CODEXVIEW_VERSION.zip" \
+            "dist/codexview-$CODEXVIEW_VERSION.tar.gz" \
+            "dist/codexview-$CODEXVIEW_VERSION.manifest.json" \
+            dist/SHA256SUMS \
+            --verify-tag \
+            --title "CodexView $CODEXVIEW_VERSION · Public Preview" \
+            --prerelease \
+            --notes-file "docs/releases/$GITHUB_REF_NAME.md"

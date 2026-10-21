@@ -13,7 +13,7 @@ Assessment date: 2026-10-21. This is an initial public-preview release, not a cl
 | Privacy | Public allowlist, clean upload tree, synthetic README screenshot | Maintainers must continue reviewing new public inputs |
 | Documentation | English and Chinese README, architecture, security, contributor and performance notes | UI currently English |
 | License | MIT in root LICENSE; development dependencies not bundled | Project is independent of OpenAI |
-| CI | GitHub Actions definitions included; local commands exercised | GitHub-hosted runs have not occurred before repository publication |
+| CI | GitHub Actions definitions included; local commands exercised | See the latest GitHub Actions run for hosted validation |
 
 ## Release assets
 
@@ -33,4 +33,4 @@ The parent development workspace contains historical/private files. Publish only
 4. Attach the standalone program, source archives, source manifest and checksums produced together.
 5. Enable a private security-reporting route and review issue attachments for sensitive session data.
 
-No repository creation, push, tag or public upload is performed by the local packaging tool.
+The local packaging tool does not upload files. Pushing a version tag triggers the included Release workflow, which builds the reviewed source and publishes preview assets.
