@@ -1,12 +1,35 @@
 # CodexView
 
-A lightweight, read-only viewer for Codex CLI sessions. Browse server conversations, search execution records, mark important tasks, and keep private review notes.
+**Run the work in your terminal. Read the full story in your browser.**
+
+Codex CLI works in a terminal with limited room for reading and scrolling. After hours of work and hundreds of turns, finding an earlier decision, following the execution history, or picking up where you left off becomes difficult.
+
+CodexView is a lightweight, read-only reader for native Codex CLI sessions on your machine or a remote server. Open long conversations, navigate by task, and search for the context you need.
 
 **Single-file deployment · Built with Python · No third-party runtime dependencies**
 
 [中文说明](README.zh-CN.md) · [MIT License](LICENSE)
 
 ![CodexView session reader](docs/images/reader.png)
+
+## Why CodexView
+
+| When you need to… | CodexView helps you… |
+| --- | --- |
+| Read a conversation that has outgrown terminal scrollback | Browse a task navigator, jump by task number, and see task start times |
+| Find an earlier error, decision, or discussion about a file | Search session content and jump back to the matching context |
+| Read replies buried in tool output | Use Reading focus; expand execution details when needed |
+| Check recent progress while a long task continues | Jump to Latest and use Refresh to read appended records |
+| Return to a project the next day | Filter sessions and task titles; keep important tasks and separate notes |
+| Read work running on a remote server | Deploy beside Codex CLI and open the reader in your browser |
+
+![How Codex CLI execution and CodexView read-only browsing work together](docs/images/scenarios-en.png)
+
+### One Codex instance runs the session. Read it without starting another.
+
+Keep one Codex CLI instance responsible for executing a session. Reading its history should not require starting another Codex instance, resuming the same session, or interrupting the work. CodexView reads session records already written to disk without taking over the active session. The original Codex instance can keep working; use Refresh to check appended content.
+
+Browser reading is independent of the Codex CLI execution instance. CodexView does not enable multiple Codex instances to operate on the same session, and it never executes commands found in conversation text.
 
 ## Install
 
@@ -111,4 +134,4 @@ This is a **public preview**. First-time search of very large files can take sev
 
 Released under the [MIT License](LICENSE). See [Security](SECURITY.md) and [Contributing](CONTRIBUTING.md) for more information.
 
-CodexView is an independent project, not affiliated with or supported by OpenAI. Documentation screenshots contain synthetic conversations only.
+CodexView is an independent project, not affiliated with or supported by OpenAI. Documentation screenshots contain synthetic conversations only; scenario diagrams illustrate the reading workflow.

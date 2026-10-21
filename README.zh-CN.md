@@ -1,12 +1,35 @@
 # CodexView
 
-轻量、只读的 Codex CLI 会话阅读器。在浏览器中查看服务器会话、搜索执行记录、标记重点并保存审阅笔记。
+**终端用来执行，浏览器用来读完整过程。**
+
+Codex CLI 的终端窗口和滚动阅读空间有限。任务持续数小时、会话积累数百轮后，回看过程、查找结论、重新接上思路都会变得困难。
+
+CodexView 是轻量、只读的 Codex CLI 会话阅读器，将本机或远程服务器上的原生会话整理为可导航、可搜索的网页，让长会话也能快速打开、清晰浏览、准确定位。
 
 **单文件部署 · Python 实现 · 无需安装第三方依赖**
 
 [English](README.md) · [MIT 许可证](LICENSE)
 
 ![CodexView 会话阅读界面](docs/images/reader.png)
+
+## 为什么需要 CodexView
+
+| 你遇到的情况 | 用 CodexView 做什么 |
+| --- | --- |
+| 会话太长，终端里来回滚动仍找不到位置 | 按任务目录阅读，按任务号跳转，查看每个任务的开始时间 |
+| 想找之前的报错、方案或某个文件的讨论 | 搜索正文并跳回匹配位置，连同上下文一起阅读 |
+| 工具输出很多，关键回复被淹没 | 使用 Reading focus 阅读请求与回复，需要时再展开执行细节 |
+| 长任务仍在运行，只想查看最近做了什么 | 跳到 Latest，点击 Refresh 读取新增记录 |
+| 隔天接着工作，需要找回关键结论 | 筛选会话和任务标题，用收藏标记与独立笔记留下线索 |
+| Codex 跑在远程服务器，想在本机舒服地阅读 | 在服务器部署一次，从浏览器访问会话 |
+
+![Codex CLI 执行与 CodexView 只读阅读的使用场景示意](docs/images/scenarios-zh.png)
+
+### 一个 Codex 执行，同一会话随时回看
+
+一个 session 交给一个 Codex CLI 实例执行。为了回看记录，无需再启动另一个 Codex、恢复同一个 session，或打断当前工作：CodexView 只读访问已落盘的会话记录，不接管正在执行的会话。查看期间，原来的 Codex 可以继续工作；点击 Refresh 检查后续追加的内容。
+
+浏览器查看与 Codex CLI 的执行实例相互独立。CodexView 不提供多个 Codex 实例同时操作同一会话的能力，也不将会话中的文本当作命令执行。
 
 ## 安装
 
@@ -111,4 +134,4 @@ Codex 原始 session、rollout、config、auth 数据严格只读，Native 会�
 
 采用 [MIT License](LICENSE)。更多信息：[安全说明](SECURITY.md) · [参与贡献](CONTRIBUTING.md)。
 
-CodexView 是独立项目，与 OpenAI 无隶属或官方支持关系。文档截图仅使用虚构会话。
+CodexView 是独立项目，与 OpenAI 无隶属或官方支持关系。文档截图仅使用虚构会话，场景图为使用方式示意。
