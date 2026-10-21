@@ -2,7 +2,7 @@
 
 Download the matching [6.3.0-dev.4 preview](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.4). The published 6.2.1 files remain available as the previous stable baseline.
 
-Last updated: 2026-10-21 (Asia/Shanghai).
+Last updated: 2026-10-22 (Asia/Shanghai).
 
 Codex sessions often point to Markdown reports and HTML galleries saved on the server. Open these links in a separate browser tab while keeping the conversation available. Markdown supports headings, tables, code blocks and local report links. HTML uses an isolated, static preview; Read / Source and Refresh are available in the surrounding reader.
 

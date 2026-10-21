@@ -1,6 +1,6 @@
 # Changelog
 
-## 6.3.0-dev.4 — 2026-10-21 (Asia/Shanghai) — review controls hotfix
+## 6.3.0-dev.4 — 2026-10-22 (Asia/Shanghai) — review controls hotfix
 
 - Restore missing review-write and task-step handlers used by mark buttons, review shortcuts, notes and next/previous navigation.
 - Serialize review writes, prevent duplicate pending toggles and show save failures without losing note text or displaying unsaved marks as saved.

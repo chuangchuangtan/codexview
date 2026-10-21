@@ -14,7 +14,7 @@ CodexView is a lightweight Codex CLI reader built for **hundreds to thousands of
 
 **Scale validation**: a 2,000-turn synthetic session and a 755-task, approximately 616 MB real session have been exercised separately, covering task count and large-file workloads. [See validation scope and performance records](docs/performance.md#task-count-validation-2026-10-21).
 
-**Last updated: 2026-10-21 (Asia/Shanghai)** · Current version: `6.3.0-dev.4` · Development preview
+**Last updated: 2026-10-22 (Asia/Shanghai)** · Current version: `6.3.0-dev.4` · Development preview
 
 ![CodexView at turn 1,000 of a 2,000-turn synthetic session](docs/images/continuous-reader.png)
 
@@ -133,7 +133,7 @@ Use Cmd/Ctrl F to search session content and `/` to filter task titles. Refresh 
 
 ## 2026-10-21 update: continuous reading (6.3.0-dev.4)
 
-**6.3.0-dev.4 hotfix:** restores Important / Marked / Later / Reviewed, note saving and next/previous task controls. Saved state updates in place; failed saves show a retry message.
+**2026-10-22 · 6.3.0-dev.4 hotfix:** restores Important / Marked / Later / Reviewed, note saving and next/previous task controls. Saved state updates in place; failed saves show a retry message.
 
 The preview also includes:
 
