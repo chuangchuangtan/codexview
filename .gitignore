@@ -1,0 +1,23 @@
+# Allowlist: this working directory also holds private historical deployment data.
+/*
+!/.gitignore
+!/.github/
+!/src/
+!/tests/
+!/tools/
+!/docs/
+!/codexview
+!/README.md
+!/README.zh-CN.md
+!/CONTRIBUTING.md
+!/SECURITY.md
+!/LICENSE
+!/CHANGELOG.md
+!/package.json
+!/package-lock.json
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store
+/tools/build_fast.py
+/tools/build_fast2.py
