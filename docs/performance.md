@@ -41,3 +41,16 @@ A 739-task real session was used for 100 alternating loopback HTTP requests per 
 | Representative section | 3.84 / 4.22 ms | 4.20 / 4.65 ms |
 
 The shell grew by 1,697 bytes (under 1%). Warm responses remained close and below the existing endpoint targets in this sample. This shared-server test is not a guarantee about other workloads or browser paint. An earlier 20-sample run showed a 41.75 ms candidate task p95; that tail difference did not recur in the 100-sample follow-up. Cold indexing and live-search behavior were not certified anew by this comparison. Index/search algorithms are unchanged; first report requests are independently bounded. Real files, paths and full measurement records remain private.
+
+## Reading refinement comparison (2026-10-21)
+
+The 6.3.0-dev.2 candidate was compared against the deployed 6.3.0-dev version on a growing 744-task session, using 100 alternating loopback HTTP requests per endpoint and the same Python 3.7 interpreter, copied review state and enabled Native discovery.
+
+| Endpoint | 6.3.0-dev median / p95 | 6.3.0-dev.2 median / p95 |
+| --- | ---: | ---: |
+| Session shell | 15.14 / 16.37 ms | 15.77 / 17.11 ms |
+| Warm manifest | 15.70 / 20.29 ms | 16.31 / 19.21 ms |
+| Task 632 structure | 3.81 / 4.55 ms | 4.13 / 4.65 ms |
+| Representative section | 3.91 / 4.73 ms | 4.24 / 5.27 ms |
+
+The shell increased by 8,518 bytes (4.2%). The largest measured p95 increase was 0.74 ms. This verifies warm HTTP behavior only, not browser paint, cold indexing or first search. Session discovery, indexing and search implementations are unchanged; scroll bookmarks add no network requests.

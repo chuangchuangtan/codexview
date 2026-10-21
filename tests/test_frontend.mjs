@@ -38,3 +38,8 @@ assert.ok(context.mdRender('[Website](https://example.com/?a=1&b=2)').includes('
 assert.ok(!context.mdRender('[Bad](//evil.example/report.md)').includes('<a '));
 assert.ok(context.mdRender('![Chart](/reports/chart.png)').includes('loading="lazy"'));
 console.log('PASS: report links, code fences, unsafe protocols and lazy images');
+
+const headings=context.mdRender('# 中文标题\n\n## Repeat\n\n## Repeat\n\n> ## Repeat\n\n## Repeat-2',{headings:true});
+const ids=[...headings.matchAll(/ id="([^"]+)"/g)].map(x=>x[1]);assert.equal(new Set(ids).size,5);assert.ok(ids.includes('中文标题'));assert.ok(ids.includes('repeat-3'));
+assert.ok(!context.mdRender('[Jump](#中文标题)').includes('target="_blank"'));
+console.log('PASS: unique Unicode heading anchors and same-page links');

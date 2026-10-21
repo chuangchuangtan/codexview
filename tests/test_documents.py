@@ -70,9 +70,9 @@ class DocumentTests(unittest.TestCase):
         for value in ('BAD_SCRIPT','BAD_FRAME','BAD_EVENT','BAD_IMAGE','<script>','<iframe','<base','<form','<input','<meta http-equiv','https://evil.example'):
             self.assertNotIn(value,text)
         self.assertIn('src="/files/raw/0/chart.png"',text);self.assertIn('href="/files/raw/0/theme.css"',text)
-        self.assertIn('href="/files/raw/0/next.html"',text);self.assertIn('&lt;script&gt;TEXT&lt;/script&gt;',text)
-        wrapper=self.get('/file?'+urlencode({'path':str(self.html)}))[1].decode();self.assertIn('sandbox=""',wrapper)
-        self.assertNotIn('sandbox="allow-',wrapper)
+        self.assertIn('href="/file?path=',text);self.assertIn('next.html" target="_top"',text);self.assertIn('&lt;script&gt;TEXT&lt;/script&gt;',text)
+        wrapper=self.get('/file?'+urlencode({'path':str(self.html)}))[1].decode();self.assertIn('sandbox="allow-top-navigation-by-user-activation"',wrapper)
+        self.assertNotIn('allow-scripts',wrapper);self.assertNotIn('allow-same-origin',wrapper)
         image=self.root/'chart.png';image.write_bytes(b'\x89PNG\r\n\x1a\nfixture')
         status,body,h=self.get('/files/raw/0/chart.png');self.assertEqual(status,200);self.assertEqual(body,image.read_bytes());self.assertEqual(h['Content-Type'],'image/png')
     def test_encoded_paths_and_invalid_text(self):
@@ -90,3 +90,16 @@ class DocumentTests(unittest.TestCase):
             self.assertEqual(command.count('--file-root'),2)
             positions=[i for i,x in enumerate(command) if x=='--file-root']
             self.assertEqual([command[i+1] for i in positions],[str(self.root),str(self.root)])
+
+    def test_report_navigation_preserves_context_and_blocks_escapes(self):
+        self.html.write_text('<a href="next.html#results">Next</a><a href="#same">Same</a><a href="../outside.html">Outside</a><a href="//evil.example/report.html">Remote</a>')
+        status,raw,h=self.get('/files/raw/0/index.html?'+urlencode({'sid':fixtures.SID,'task':'733'}))
+        text=raw.decode();self.assertEqual(status,200)
+        self.assertIn('sid='+fixtures.SID,text);self.assertIn('task=733',text);self.assertIn('#results',text)
+        self.assertIn('href="#same"',text);self.assertEqual(text.count('target="_top"'),1)
+        self.assertNotIn('outside.html',text);self.assertNotIn('evil.example',text)
+        self.assertIn("script-src 'none'",h['Content-Security-Policy']);self.assertIn('sandbox allow-top-navigation-by-user-activation',h['Content-Security-Policy'])
+        self.assertEqual(NS['report_task']('733'),'733');self.assertEqual(NS['report_task']('1#evil'),'')
+        wrapper=NS['document_html']('</script>','fixture','733')
+        self.assertNotIn('"path": "</script>"',wrapper)
+        self.assertIn('"task": "733"',wrapper)

@@ -7,7 +7,7 @@ DOCUMENT_TYPES={'.md':'text/plain; charset=utf-8','.markdown':'text/plain; chars
                 '.html':'text/html; charset=utf-8','.htm':'text/html; charset=utf-8'}
 RESOURCE_TYPES={'.css':'text/css; charset=utf-8','.png':'image/png','.jpg':'image/jpeg',
                 '.jpeg':'image/jpeg','.gif':'image/gif','.webp':'image/webp','.ico':'image/x-icon'}
-REPORT_CSP="default-src 'none'; script-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; sandbox"
+REPORT_CSP="default-src 'none'; script-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; sandbox allow-top-navigation-by-user-activation"
 
 class ReportError(ValueError):
     def __init__(self,message,status=403):super().__init__(message);self.status=status
@@ -74,7 +74,7 @@ class ReportFiles:
             if fd is not None:os.close(fd)
         raw='/files/raw/'+str(index)+'/'+urllib.parse.quote(rel.as_posix(),safe='/')
         return {'path':str(path),'name':path.name,'kind':'html' if suffix in ('.html','.htm') else 'markdown',
-                'type':types[suffix],'raw_url':raw,'size':len(data)},bytes(data)
+                'type':types[suffix],'raw_url':raw,'size':len(data),'modified_ns':str(st.st_mtime_ns),'relative_path':rel.as_posix(),'root_name':self.roots[index].name},bytes(data)
     def raw_path(self,index,relative):
         if index<0 or index>=len(self.roots):raise ReportError('Unknown report directory.',404)
         path=Path(os.path.abspath(str(self.roots[index]/relative)))
@@ -88,7 +88,7 @@ class StaticReport(HTMLParser):
     void={'img','br','hr','link','col'}
     blocked={'script','iframe','object','embed','svg','math','template','noscript','textarea','xmp','plaintext'}
     attrs=set('id class title style lang dir role alt width height colspan rowspan scope datetime start reversed open media'.split())
-    def __init__(self,raw_url):super().__init__(convert_charrefs=True);self.base=raw_url;self.out=[];self.skip=[];self.in_style=False
+    def __init__(self,raw_url,document_link=None):self.document_link=document_link;super().__init__(convert_charrefs=True);self.base=raw_url;self.out=[];self.skip=[];self.in_style=False
     def url(self,value,kind):
         u=urllib.parse.urlsplit(value)
         if u.scheme or u.netloc or u.query or '\\' in value:return None
@@ -121,7 +121,11 @@ class StaticReport(HTMLParser):
             clean.extend([('src',src),('loading','lazy'),('decoding','async')])
         elif tag=='a':
             href=self.url(values.get('href',''),'link')
-            if href:clean.append(('href',href))
+            if href:
+                if self.document_link and not href.startswith('#'):
+                    href=self.document_link(href)
+                    if href:clean.extend([('href',href),('target','_top')])
+                else:clean.append(('href',href))
         elif tag=='link':
             href=self.url(values.get('href',''),'asset')
             if values.get('rel','').lower()!='stylesheet' or not href or not urllib.parse.urlsplit(href).path.lower().endswith('.css'):return
@@ -139,12 +143,29 @@ class StaticReport(HTMLParser):
     def handle_data(self,data):
         if not self.skip:self.out.append(data if self.in_style else html.escape(data))
 
-def static_report(text,raw_url):
-    parser=StaticReport(raw_url);parser.feed(text);parser.close()
+def static_report(text,raw_url,document_link=None):
+    parser=StaticReport(raw_url,document_link);parser.feed(text);parser.close()
     return '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><style>img{max-width:100%;height:auto}body{overflow-wrap:anywhere}</style>'+''.join(parser.out)
 
-def document_html(value,sid=''):
-    model=json.dumps({'path':value,'sid':sid},ensure_ascii=False).replace('<','\\u003c')
+def report_task(value):
+    value=str(value)
+    return value if re.fullmatch(r'[1-9]\d{0,7}',value) else ''
+
+def report_navigation(files,target,sid='',task=''):
+    parsed=urllib.parse.urlsplit(target)
+    match=re.fullmatch(r'/files/raw/(\d+)/(.*)',parsed.path)
+    if not match:return None
+    try:
+        path=files.raw_path(int(match.group(1)),urllib.parse.unquote(match.group(2)))
+        files.locate(path)
+    except ReportError:return None
+    query={'path':path}
+    if sid:query['sid']=sid[:200]
+    if report_task(task):query['task']=report_task(task)
+    return '/file?'+urllib.parse.urlencode(query)+('#'+parsed.fragment if parsed.fragment else '')
+
+def document_html(value,sid='',task=''):
+    model=json.dumps({'path':value,'sid':sid,'task':report_task(task)},ensure_ascii=False).replace('<','\\u003c')
     return '''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Report · CodexView</title><style>'''+CSS+'''
-body{margin:0}.filebar{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--bg);flex-wrap:wrap}.filebrand{font-weight:700}.filebar button,.filebar a{font:inherit;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--p);color:inherit;text-decoration:none;cursor:pointer}.filebar button[aria-pressed=true]{outline:2px solid #709ce8}.filepath{overflow-wrap:anywhere;font-size:12px;color:var(--m);flex-basis:100%}.filemessage{padding:16px 24px;margin:0;color:var(--m);font-size:13px}.filecontent{max-width:1000px;margin:auto;padding:16px 28px 60px}.filecontent pre{white-space:pre-wrap;overflow-wrap:anywhere}.fileframe{display:block;width:100%;height:calc(100dvh - 160px);border:0;background:white}.filehidden{display:none!important}@media(max-width:600px){.filecontent{padding:12px 16px}.filebar{gap:8px;padding:10px}.filebar button,.filebar a{font-size:12px}}
-</style></head><body><header class="filebar"><a id="fileBack" href="/">← Sessions</a><span class="filebrand">CodexView · Report</span><span class="grow"></span><button id="fileRendered" aria-pressed="true">Read</button><button id="fileSource" aria-pressed="false">Source</button><button id="fileRefresh">↻ Refresh</button><button id="fileTheme" aria-label="Toggle theme">◐</button><span id="filePath" class="filepath"></span></header><p id="fileMessage" class="filemessage" role="status">Loading report…</p><main id="fileContent" class="filecontent md"></main><iframe id="fileFrame" class="fileframe filehidden" sandbox="" referrerpolicy="no-referrer" title="Isolated static HTML report"></iframe><script id="fileModel" type="application/json">'''+model+'''</script><script>'''+__ASSET_MARKDOWN__+'\n'+__ASSET_FILE_JS__+'''</script></body></html>'''
+body{margin:0}.filebar{position:sticky;top:0;z-index:4;display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--bg);flex-wrap:wrap}.filebar button,.filebar a{font:inherit;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--p);color:inherit;text-decoration:none;cursor:pointer}.filebar button[aria-pressed=true]{outline:2px solid var(--b)}.filebrand{font-size:12px;color:var(--m)}.filename{font-size:16px;overflow-wrap:anywhere}.fileidentity{display:grid;gap:3px;min-width:0}.filecrumb{display:flex;align-items:center;gap:8px;flex-basis:100%;font-size:12px;color:var(--m);min-width:0}.filepath{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex:1}.filebar .copy-path{border:0;padding:2px 6px;font-size:12px}.filemessage{padding:12px 24px;margin:0;color:var(--m);font-size:12px}.file-layout{display:block}.file-layout.outline-open{display:grid;grid-template-columns:220px minmax(0,1fr)}.filecontent{width:100%;max-width:1000px;min-width:0;box-sizing:border-box;margin:auto;padding:18px 28px 60px}.filecontent pre{white-space:pre-wrap;overflow-wrap:anywhere}.filecontent h1,.filecontent h2,.filecontent h3,.filecontent h4,.filecontent h5,.filecontent h6{scroll-margin-top:150px}.fileframe{display:block;width:100%;height:calc(100dvh - 160px);border:0;background:white;grid-column:1/-1}.filehidden{display:none!important}.fileoutline{position:sticky;align-self:start;top:118px;max-height:calc(100dvh - 140px);overflow:auto;border-right:1px solid var(--line);padding:14px 12px}.fileoutline b{display:block;font-size:12px;margin:0 8px 10px;color:var(--m)}.fileoutline a{display:block;padding:6px 8px;color:var(--m);font-size:13px;line-height:1.45;overflow-wrap:anywhere;text-decoration:none;border-radius:6px}.fileoutline a:hover,.fileoutline a:focus-visible{color:var(--t);background:var(--p)}.fileoutline a[data-depth="2"]{padding-left:20px}.fileoutline a[data-depth="3"]{padding-left:30px}.fileerror{margin:24px 0;padding:20px;border:1px solid var(--line);border-radius:12px;background:var(--p);line-height:1.7}@media(max-width:700px){.filecontent{padding:12px 16px}.filebar{gap:8px;padding:10px}.filebar button,.filebar a{font-size:12px}.file-layout.outline-open{display:block}.fileoutline{position:fixed;z-index:5;top:130px;left:12px;right:12px;max-height:60dvh;background:var(--bg);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px #0002}.filename{font-size:14px}}
+</style></head><body><header class="filebar"><a id="fileBack" href="/">← Sessions</a><div class="fileidentity"><span class="filebrand">CodexView · Report</span><strong id="fileName" class="filename">Report</strong></div><span class="grow"></span><button id="fileOutlineToggle" aria-expanded="false" hidden>Contents</button><button id="fileRendered" aria-pressed="true">Read</button><button id="fileSource" aria-pressed="false">Source</button><button id="fileRefresh">↻ Refresh</button><button id="fileTheme" aria-label="Toggle theme">◐</button><div class="filecrumb"><span id="filePath" class="filepath"></span><button id="fileCopyPath" class="copy-path">Copy path</button></div></header><p id="fileMessage" class="filemessage" role="status">Loading report…</p><div id="fileLayout" class="file-layout"><aside id="fileOutline" class="fileoutline" hidden><b>On this page</b><nav id="fileOutlineLinks" aria-label="Document contents"></nav></aside><main id="fileContent" class="filecontent md"></main><iframe id="fileFrame" class="fileframe filehidden" sandbox="allow-top-navigation-by-user-activation" referrerpolicy="no-referrer" title="Isolated static HTML report"></iframe></div><script id="fileModel" type="application/json">'''+model+'''</script><script>'''+__ASSET_MARKDOWN__+'\n'+__ASSET_FILE_JS__+'''</script></body></html>'''

@@ -1,5 +1,13 @@
 # Changelog
 
+## 6.3.0-dev.2 — 2026-10-21 (Asia/Shanghai) — reading refinement
+
+- Restore per-session task and paragraph positions using bounded browser-local bookmarks; honor explicit task links and invalidate stale section positions.
+- Keep HTML navigation, filename, source and refresh on the same current report, with a return link to the originating task.
+- Add an optional Markdown heading outline with Unicode and duplicate-heading anchors.
+- Add compact task rows, reading-width presets and grouped review controls without changing task virtualization or search.
+- Retain the 6.2.1 stable release and the preceding 6.3.0-dev source baseline.
+
 ## 6.3.0-dev — 2026-10-21 (Asia/Shanghai) — generated report reader
 
 - Preserve 6.2.1 with a stable baseline tag and rollback record.
