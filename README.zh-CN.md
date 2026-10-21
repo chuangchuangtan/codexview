@@ -119,6 +119,10 @@ codexview serve --host 0.0.0.0 --port 80 --codex-home /path/to/.codex
 
 Cmd/Ctrl F 搜索会话内容，`/` 筛选任务标题。点击 Refresh 检查新追加的记录。任务时间按浏览器本地时区显示。
 
+## 生成报告阅读（开发中）
+
+`codex/document-reader` 分支新增按需阅读 Markdown 和静态 HTML 的能力，通过 `--file-root` 指定可读报告目录。已发布的 6.2.1 下载包保持不变。参见[文档阅读配置与边界](docs/document-reader.md)。
+
 ## 数据安全与升级
 
 Codex 原始 session、rollout、config、auth 数据严格只读，Native 会话发现始终开启。工具不操控 Codex CLI，也不运行会话中出现的命令。

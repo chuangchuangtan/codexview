@@ -37,3 +37,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",sans-se
 @media(max-width:900px){.mobile-nav-open .nav-search,.mobile-nav-open .nav-title,.mobile-nav-open .nav-pos{display:block!important}.mobile-nav-open .nav-tools{display:flex!important}.mobile-nav-open .nav-title-row{display:flex!important}.mobile-nav-open .sidehead{padding:12px!important}}
 .task-time{color:var(--m);font:11px/1.5 ui-monospace,monospace;letter-spacing:0;text-transform:none;margin-left:10px;font-variant-numeric:tabular-nums;white-space:nowrap}
 @media(max-width:600px){.task-time{font-size:10px;margin-left:6px}.taskhead .marks{flex-basis:100%;margin-top:4px;justify-content:flex-end}}
+
+/* Reports referenced in conversation text remain lazy and bounded by the reader. */
+.md img{max-width:100%;height:auto}.report-link{text-decoration-style:dotted!important}

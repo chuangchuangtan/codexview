@@ -5,8 +5,11 @@ ROOT = Path(__file__).resolve().parent.parent
 
 def build():
     s = (ROOT / 'src/server.py').read_text(encoding='utf-8')
+    s = s.replace('__DOCUMENTS__', (ROOT/'src/documents.py').read_text(encoding='utf-8'))
     assets = {'STYLE': (ROOT/'src/web/style.css').read_text(encoding='utf-8')+'\n'+(ROOT/'src/web/studio.css').read_text(encoding='utf-8'),
-              'READER': (ROOT/'src/web/reader.js').read_text(encoding='utf-8'),
+              'READER': (ROOT/'src/web/markdown.js').read_text(encoding='utf-8')+'\n'+(ROOT/'src/web/reader.js').read_text(encoding='utf-8'),
+              'MARKDOWN': (ROOT/'src/web/markdown.js').read_text(encoding='utf-8'),
+              'FILE_JS': (ROOT/'src/web/file.js').read_text(encoding='utf-8'),
               'HOME': (ROOT/'src/web/home.html').read_text(encoding='utf-8'),
               'HOME_JS': (ROOT/'src/web/home.js').read_text(encoding='utf-8')}
     for key, value in assets.items():

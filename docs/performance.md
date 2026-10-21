@@ -28,3 +28,16 @@ These are acceptance targets, not universal guarantees or completed 1,000-sessio
 6. **Distribution.** Expand synthetic public screenshots, supported installation artifacts, authenticated-proxy recipes, Linux/macOS matrix, cache eviction and repair tools. Validate release contents before publishing.
 
 Avoid unmeasured features in the first-view path: full-session attention scans, eager previews for every tool call, global activity statistics and forced Native discovery shutdown.
+
+## Document reader comparison (2026-10-21)
+
+A 739-task real session was used for 100 alternating loopback HTTP requests per endpoint on the same Linux server and Python 3.7 runtime. Candidate and stable instances used separate runtime directories with identical copied review state; Native discovery remained enabled.
+
+| Endpoint | 6.2.1 median / p95 | 6.3.0-dev median / p95 |
+| --- | ---: | ---: |
+| Session shell | 15.40 / 16.66 ms | 15.90 / 17.66 ms |
+| Warm manifest | 15.64 / 17.66 ms | 16.32 / 18.74 ms |
+| Task 632 structure | 3.74 / 4.41 ms | 4.12 / 4.64 ms |
+| Representative section | 3.84 / 4.22 ms | 4.20 / 4.65 ms |
+
+The shell grew by 1,697 bytes (under 1%). Warm responses remained close and below the existing endpoint targets in this sample. This shared-server test is not a guarantee about other workloads or browser paint. An earlier 20-sample run showed a 41.75 ms candidate task p95; that tail difference did not recur in the 100-sample follow-up. Cold indexing and live-search behavior were not certified anew by this comparison. Index/search algorithms are unchanged; first report requests are independently bounded. Real files, paths and full measurement records remain private.

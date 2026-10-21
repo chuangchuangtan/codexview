@@ -1,5 +1,13 @@
 # Changelog
 
+## 6.3.0-dev — generated report reader
+
+- Preserve 6.2.1 with a stable baseline tag and rollback record.
+- Open linked Markdown and static HTML reports in an independent reader, on demand.
+- Add explicit read-only project roots, bounded file reads, isolated HTML, local raster/CSS resources, source view and manual refresh.
+- Keep Native discovery, session indexes, virtual reading and search algorithms unchanged.
+
+
 ## 6.2.1
 
 - Compress task navigator controls into three rows; leave the remaining sidebar height to the task list.

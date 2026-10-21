@@ -119,6 +119,10 @@ Directory priority: `--codex-home` → `CODEX_HOME` environment variable → `~/
 
 Use Cmd/Ctrl F to search session content and `/` to filter task titles. Refresh checks appended records. Task timestamps use your browser's local timezone.
 
+## Generated reports (development)
+
+The `codex/document-reader` branch adds on-demand Markdown and static HTML reading with explicit `--file-root` directories. The published 6.2.1 download remains unchanged. See [report reader setup and limits](docs/document-reader.md).
+
 ## Data safety and upgrades
 
 Codex-owned sessions, rollouts, configuration and authentication files remain strictly read-only. Native session discovery stays enabled. CodexView neither controls Codex CLI nor executes commands found in conversations.

@@ -7,7 +7,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-VERSION='6.2.1'
+VERSION='6.3.0-dev'
 MIN_PY=(3,7)
 if sys.version_info < MIN_PY:
     raise SystemExit('CodexView requires Python >= 3.7; current: %s' % sys.version.split()[0])
@@ -558,15 +558,17 @@ def workspace_html(sid,idx,state,tasks,items):
     extra=''
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>CodexView · {html.escape(sid)}</title><style>{CSS}{extra}</style></head><body><a class="skip-link" href="#reader">Skip to conversation</a><header class="top appbar"><button id="mobileNav" class="quiet-btn mobile-nav-toggle" aria-label="Open task navigator" aria-expanded="false">☰</button><div class="app-left"><a href="/" class="app-brand" title="Recent workspace"><span class="app-logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.2 5.2A8 8 0 1 0 17.5 17"/><path d="M16.8 6.4A6.1 6.1 0 0 0 12 4"/><path d="M9 9.2a4 4 0 1 0 6 5.2"/></svg></span><b>CodexView</b><small class="app-version">v{VERSION}</small></a><span class="app-sep"></span><div class="session-crumb"><span class="crumb-label">Session</span><select id="ss" class="session-select">{opts}</select></div></div><span class="grow"></span><span class="readonly-badge">● Read-only</span><button id="searchSession" class="quiet-btn" title="Search session · Ctrl/Cmd F">⌕ Search</button><button id="refreshSession" class="quiet-btn">↻ Refresh</button><div class="view-switch"><button id="mode" class="quiet-btn">Overview</button></div><div class="font-group"><button id="minus" class="quiet-btn icon-only" title="Decrease text size">A−</button><button id="resetfont" class="quiet-btn font-reset" title="Reset text size">A</button><button id="plus" class="quiet-btn icon-only" title="Increase text size">A+</button></div><button id="theme" class="quiet-btn icon-only" title="Toggle theme">☀</button><button id="helpbtn" class="quiet-btn icon-only" title="Keyboard shortcuts"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 0 1 4.6 1c0 1.8-2.4 2.1-2.4 3.8"/><path d="M12 17h.01"/></svg></button><details class="more-menu"><summary class="quiet-btn icon-only" title="More actions"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg></summary><div class="more-pop"><div class="menu-label">Session actions</div><button id="baseline" class="menu-item"><span>Set NEW baseline</span></button><div class="menu-rule"></div><div class="menu-meta">Codex source is read-only</div></div></details><span id="exportmsg" class="export-status"></span></header><div class="layout"><aside class="side"><div class="sidehead"><div class="nav-head"><div class="nav-title-row"><button id="sidecollapse" class="side-collapse" title="Collapse navigator" aria-label="Collapse navigator"><svg viewBox="0 0 20 20"><path d="m12.5 5-5 5 5 5"/></svg></button><a class="nav-title" href="/" title="Back to sessions">Tasks</a><span id="navpos" class="nav-pos">— / —</span></div><button id="overviewBtn" class="review-summary" title="Review overview" aria-label="Review overview"><span aria-hidden="true">◴</span><b id="reviewpct">0%</b></button></div><div class="nav-search"><input id="taskq" class="tasksearch" aria-label="Filter task titles" placeholder="Filter task titles…"><kbd>/</kbd></div><div class="nav-tools"><select id="taskFilter" aria-label="Filter tasks"><option value="all">All tasks</option><option value="new">New</option><option value="important">★ Important</option><option value="later">Later</option><option value="reviewed">Reviewed</option><option value="marked">Marked</option></select><label class="jump-control" for="jumpTask"><span class="sr-only">Go to task</span><input id="jumpTask" type="number" min="1" placeholder="#" inputmode="numeric"></label><button id="latestTask" class="btn" title="Jump to latest task">Latest ↓</button></div></div><div class="nav-list-wrap"><div id="tl"></div><div id="minimap" class="minimap" aria-label="Task review map"></div></div></aside><div id="sideResizer" class="sidebar-resizer" role="separator" aria-orientation="vertical" aria-valuemin="236" aria-valuemax="520" aria-label="Resize task navigator" tabindex="0"></div><button id="drawerScrim" class="drawer-scrim" aria-label="Close task navigator"></button><main class="main"><div class="session-ready" id="sessionReady" role="status"><b>● Native source</b><span id="readinessText">Preparing session…</span></div><div id="reader" tabindex="-1" class="reader"><div class="session-loading" aria-label="Loading session"><div class="load-line load-title"></div><div class="load-line"></div><div class="load-line"></div><div class="load-line"></div></div></div></main></div><div id="contentResizer" class="content-resizer" role="separator" aria-orientation="vertical" aria-label="Resize reading width" aria-valuemin="480" aria-valuemax="1400" tabindex="0" title="Drag to resize reading width · Double-click for Auto"></div><div id="contentWidthPill" class="content-width-pill"></div><div id="tasknav"><button data-nav="prev" title="Previous task"><svg viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg></button><span class="navcount"></span><button data-nav="next" title="Next task"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></div><div id="toast" role="status" aria-live="polite"></div><div id="palette"><div class="palette-card"><div class="palette-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="paletteInput" placeholder="Type a command…"></div><div id="paletteList" class="palette-list"></div></div></div><div id="helpmodal" class="helpmodal"><div class="help-card"><div class="help-title"><b>Keyboard shortcuts</b><button id="helpclose">×</button></div><div class="help-grid"><span>Session search</span><kbd>⌘/Ctrl F</kbd><span>Command palette</span><kbd>⌘/Ctrl K</kbd><span>Search tasks</span><kbd>/</kbd><span>Next / previous task</span><kbd>J / K</kbd><span>Important</span><kbd>I</kbd><span>Marked</span><kbd>M</kbd><span>Review later</span><kbd>L</kbd><span>Reviewed</span><kbd>R</kbd><span>Overview / Full</span><kbd>O</kbd><span>Close dialogs</span><kbd>Esc</kbd></div><p>Codex source files remain read-only. Review state is stored separately by CodexView.</p></div></div><div id="sessionSearchPanel" class="session-search-panel" role="dialog" aria-label="Search this session" aria-modal="true"><div class="session-search-card"><div class="session-search-head"><input id="sessionSearchInput" aria-label="Search session content" placeholder="Search this session…"><select id="sessionSearchScope" aria-label="Search scope"><option>All</option><option>User</option><option>Assistant</option><option>Activity</option><option>Reasoning</option></select><button id="sessionSearchClose" title="Close">×</button></div><div id="sessionSearchMeta" class="search-meta">Search User, Assistant, Activity, and Reasoning</div><div id="sessionSearchResults" class="search-results"></div><div class="search-hint"><span>↑ ↓ select · Enter open · Esc close</span><span>Up to 200 matching records</span></div></div></div><div id="overviewPanel" class="overview-panel"><div class="overview-card"><div class="overview-head"><div><span class="overview-kicker">Session</span><h2>Review overview</h2></div><button id="overviewClose">×</button></div><div class="overview-grid"><div><b id="ovTasks">0</b><span>Tasks</span></div><div><b id="ovReviewed">0</b><span>Reviewed</span></div><div><b id="ovNew">0</b><span>New</span></div><div><b id="ovImportant">0</b><span>Important</span></div><div><b id="ovLater">0</b><span>Later</span></div><div><b id="ovMarked">0</b><span>Marked</span></div></div><p class="overview-foot">Review state is stored separately. Codex source remains read-only.</p></div></div><div class="statusbar"><span id="count"></span><span>Adapter: {html.escape(idx.get('adapter','markdown'))}</span><span>Virtual Reader · 3-task window</span><span class="grow"></span><span>Codex source: read-only</span></div><script id="model" type="application/json">{model}</script><script>{js}</script></body></html>'''
 
+__DOCUMENTS__
+
 class App:
-    def __init__(self,store):self.s=store;self.searches={};self.search_lock=threading.Lock();self.search_gate=threading.Semaphore(1)
+    def __init__(self,store,file_roots=None):self.s=store;self.files=ReportFiles(store.home,file_roots);self.searches={};self.search_lock=threading.Lock();self.search_gate=threading.Semaphore(1)
     def handler(self):
         app=self
         class H(BaseHTTPRequestHandler):
             def log_message(self,fmt,*args):log(app.s.r,f'HTTP {self.client_address[0]} {fmt%args}',app.s.log_bytes,app.s.log_backups)
-            def sendx(self,x,typ='text/html; charset=utf-8',status=200):
+            def sendx(self,x,typ='text/html; charset=utf-8',status=200,csp=None):
                 if isinstance(x,str):x=x.encode()
-                self.send_response(status);self.send_header('Content-Type',typ);self.send_header('Content-Length',str(len(x)));self.send_header('Cache-Control','no-store');self.send_header('X-Content-Type-Options','nosniff');self.send_header('Referrer-Policy','same-origin');self.send_header('Content-Security-Policy',"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: http:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'");self.end_headers();
+                self.send_response(status);self.send_header('Content-Type',typ);self.send_header('Content-Length',str(len(x)));self.send_header('Cache-Control','no-store');self.send_header('X-Content-Type-Options','nosniff');self.send_header('Referrer-Policy','same-origin');self.send_header('Content-Security-Policy',csp or "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: http:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'");self.end_headers();
                 try:self.wfile.write(x)
                 except (BrokenPipeError,ConnectionResetError):pass
             def jsonx(self,x,status=200):self.sendx(json.dumps(x,ensure_ascii=False),'application/json; charset=utf-8',status)
@@ -574,6 +576,29 @@ class App:
                 u=urllib.parse.urlparse(self.path);p=urllib.parse.unquote(u.path)
                 if p=='/':return self.sendx(index_html(app.s.home))
                 if p=='/api/health':return self.jsonx({'version':VERSION,'native':True})
+                if p=='/file':
+                    qs=urllib.parse.parse_qs(u.query)
+                    return self.sendx(document_html((qs.get('path') or [''])[0],(qs.get('sid') or [''])[0]))
+                if p in ('/api/file','/files/resource') or p.startswith('/files/raw/'):
+                    try:
+                        if p.startswith('/files/raw/'):
+                            m=re.fullmatch(r'/files/raw/(\d+)/(.*)',p)
+                            if not m:raise ReportError('Invalid report URL.',400)
+                            value=app.files.raw_path(int(m.group(1)),m.group(2));sid=None
+                        else:
+                            qs=urllib.parse.parse_qs(u.query);value=(qs.get('path') or [''])[0];sid=(qs.get('sid') or [None])[0]
+                        info,data=app.files.read(value,sid,app.s,document=(p=='/api/file'))
+                        if p=='/api/file':
+                            try:text=data.decode('utf-8-sig')
+                            except UnicodeDecodeError:raise ReportError('Report must use UTF-8 text.',415)
+                            return self.jsonx(dict(info,text=text))
+                        if info['kind']=='html':
+                            try:data=static_report(data.decode('utf-8-sig'),info['raw_url'])
+                            except UnicodeDecodeError:raise ReportError('Report must use UTF-8 text.',415)
+                        return self.sendx(data,info['type'],csp=REPORT_CSP)
+                    except ReportError as e:return self.jsonx({'error':str(e)},e.status)
+                    except (KeyError,ValueError):return self.jsonx({'error':'Invalid session or report path.'},400)
+
                 m=re.match(r'^/api/session/(.+?)/manifest$',p)
                 if m:
                     try:return self.jsonx(app.s.status(m.group(1),retry=('retry=1' in u.query)))
@@ -646,10 +671,10 @@ def run_server(a):
     h=codex_home(a.codex_home);r=runtime(h);ensure_rt(r)
     if read_pid(r) and not a.child:raise SystemExit(f'CodexView already running PID {read_pid(r)}')
     store=Store(h,r,a.scan_dir,a.cache_sessions,a.refresh_interval,a.max_log_size,a.log_backups,True)
-    try:srv=ThreadingHTTPServer((a.host,a.port),App(store).handler())
+    try:srv=ThreadingHTTPServer((a.host,a.port),App(store,a.file_root).handler())
     except OSError as e:raise SystemExit(f'cannot bind {a.host}:{a.port}: {e}')
     with owned_open(r['pid']) as pid_file:pid_file.write(str(os.getpid()))
-    atomic(r['config'],{'version':VERSION,'host':a.host,'port':a.port,'codex_home':str(h),'scan_dir':a.scan_dir or [],'cache_sessions':a.cache_sessions,'refresh_interval':a.refresh_interval,'native':True,'started':datetime.now().isoformat()})
+    atomic(r['config'],{'version':VERSION,'host':a.host,'port':a.port,'codex_home':str(h),'scan_dir':a.scan_dir or [],'file_roots':a.file_root or [],'cache_sessions':a.cache_sessions,'refresh_interval':a.refresh_interval,'native':True,'started':datetime.now().isoformat()})
     log(r,f'START v{VERSION} pid={os.getpid()} listen={a.host}:{a.port} codex_home={h}',a.max_log_size,a.log_backups)
     print(f'CodexView {VERSION} · Codex Review Server\nPID        : {os.getpid()}\nListen     : {a.host}:{a.port}\nCodex Home : {h}\nExports    : {r["exports"]}\nLog        : {r["log"]}',flush=True)
     def stop(*_):threading.Thread(target=srv.shutdown,daemon=True).start()
@@ -665,6 +690,7 @@ def daemon(a):
     if read_pid(r):print(f'CodexView already running PID {read_pid(r)}');return
     cmd=[sys.executable,str(Path(__file__).resolve()),'serve','--foreground','--child','--host',a.host,'--port',str(a.port),'--codex-home',str(h),'--cache-sessions',str(a.cache_sessions),'--refresh-interval',str(a.refresh_interval),'--max-log-size',str(a.max_log_size),'--log-backups',str(a.log_backups)]
     for d in a.scan_dir or []:cmd+=['--scan-dir',d]
+    for d in a.file_root or []:cmd+=['--file-root',d]
     with owned_open(r['log'],append=True) as f:p=subprocess.Popen(cmd,stdin=subprocess.DEVNULL,stdout=f,stderr=f,start_new_session=True,close_fds=True)
     for _ in range(40):
         time.sleep(.1)
@@ -691,7 +717,7 @@ Remote: ssh -L 17864:127.0.0.1:17864 user@server
 Native session discovery is always enabled. Source files remain read-only.
 Only CODEX_HOME/codexview stores manifests, review state and logs.
 """
-EMBEDDED_GUIDE = """# CodexView 6.2.1
+EMBEDDED_GUIDE = """# CodexView 6.3.0-dev
 Run `codexview serve` on the Codex CLI server. Python 3.7+; no dependencies.
 Use an SSH tunnel for private remote access. Open http://127.0.0.1:17864.
 Session discovery reads filesystem metadata; first open builds a task manifest.
@@ -704,7 +730,7 @@ This is a personal viewer; place public deployments behind authentication.
 
 def parser():
     p=argparse.ArgumentParser(description='CodexView — Codex Session Review Workspace',epilog=HELP,formatter_class=argparse.RawDescriptionHelpFormatter);p.add_argument('--version',action='version',version='CodexView '+VERSION);sp=p.add_subparsers(dest='cmd')
-    s=sp.add_parser('serve',help='启动 Review Server（默认后台）');s.add_argument('--codex-home');s.add_argument('--host',default='127.0.0.1');s.add_argument('--port',type=int,default=DEFAULT_PORT);s.add_argument('--scan-dir',action='append');s.add_argument('--foreground',action='store_true');s.add_argument('--child',action='store_true',help=argparse.SUPPRESS);s.add_argument('--cache-sessions',type=int,default=2);s.add_argument('--refresh-interval',type=int,default=60);s.add_argument('--max-log-size',type=parse_size,default=10*1024*1024);s.add_argument('--log-backups',type=int,default=3);s.add_argument('--no-native',action='store_true',help=argparse.SUPPRESS)
+    s=sp.add_parser('serve',help='启动 Review Server（默认后台）');s.add_argument('--codex-home');s.add_argument('--host',default='127.0.0.1');s.add_argument('--port',type=int,default=DEFAULT_PORT);s.add_argument('--scan-dir',action='append');s.add_argument('--file-root',action='append',help='Read-only project report directory (repeatable; disabled by default)');s.add_argument('--foreground',action='store_true');s.add_argument('--child',action='store_true',help=argparse.SUPPRESS);s.add_argument('--cache-sessions',type=int,default=2);s.add_argument('--refresh-interval',type=int,default=60);s.add_argument('--max-log-size',type=parse_size,default=10*1024*1024);s.add_argument('--log-backups',type=int,default=3);s.add_argument('--no-native',action='store_true',help=argparse.SUPPRESS)
     for name in ('status','stop','logs','sessions','doctor','guide'):
         q=sp.add_parser(name);q.add_argument('--codex-home')
         if name=='logs':q.add_argument('--lines',type=int,default=100);q.add_argument('-f','--follow',action='store_true')

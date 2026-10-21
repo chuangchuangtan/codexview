@@ -39,3 +39,9 @@ flowchart TD
 The adapter recognizes `response_item` message, readable reasoning and tool call/output records. It groups function calls and their outputs by call ID. A task currently begins with a non-empty user message; environment/plugin messages may therefore appear as tasks. Turn-aware task semantics and subagent trees require a separately tested adapter migration, preserving old review IDs.
 
 Native `sessions/YYYY/MM/DD` rollouts and role-headed Markdown exports are supported. `session_index.jsonl` supplies titles without indexing transcript bodies. Archived session layouts and arbitrary newer Codex schemas require additional fixtures before support is claimed.
+
+## Generated documents (development)
+
+Session Markdown links point to `/file`, a separate shell. Only opening that shell requests `/api/file`. `ReportFiles` in `src/documents.py` performs bounded, descriptor-based read-only access beneath repeatable `--file-root` directories. It never participates in discovery, manifests, section loading, Activity or search. `src/web/markdown.js` is shared by the session and report readers.
+
+Static HTML and relative raster/CSS resources are served through `/files/raw/<root>/<path>`, with sanitization, restrictive CSP and an opaque iframe sandbox. The source view inserts text through `textContent`. See [document-reader.md](document-reader.md) for capabilities and limits, and [the stable baseline](baselines/6.2.1.md) for regression policy.
