@@ -5,7 +5,7 @@ const tasks=['a','b','c'].map((id,i)=>({id,n:i+1,title:'Task '+(i+1),sections:[]
 async function boot(url,bookmark,reload=false){
  let errors=[],scrolls=[],calls=[];const vc=new VirtualConsole();vc.on('jsdomError',e=>{if(!e.message.includes('CSS')&&!e.message.includes('navigation'))errors.push(e.message)});
  const dom=new JSDOM(response.stdout,{url,runScripts:'dangerously',pretendToBeVisual:true,virtualConsole:vc,beforeParse(w){
-  w.CSS={escape:s=>s};w.AbortController=AbortController;w.localStorage.codexviewWelcomeSeen='1';if(bookmark)w.localStorage.setItem(key,typeof bookmark==='string'?bookmark:JSON.stringify(bookmark));
+  w.history.scrollRestoration='auto';w.CSS={escape:s=>s};w.AbortController=AbortController;w.localStorage.codexviewWelcomeSeen='1';if(bookmark)w.localStorage.setItem(key,typeof bookmark==='string'?bookmark:JSON.stringify(bookmark));
   w.performance.getEntriesByType=()=>[{type:reload?'reload':'navigate'}];w.HTMLElement.prototype.scrollIntoView=()=>{};w.scrollBy=arg=>scrolls.push(arg.top);
   w.HTMLElement.prototype.getBoundingClientRect=function(){return {left:0,top:this.tagName==='P'?200:0,right:800,bottom:800,width:800,height:800}};
   w.HTMLElement.prototype.setPointerCapture=()=>{};w.HTMLElement.prototype.releasePointerCapture=()=>{};w.IntersectionObserver=class{observe(){}unobserve(){}disconnect(){}};w.ResizeObserver=class{observe(){}};
@@ -15,7 +15,7 @@ async function boot(url,bookmark,reload=false){
  return {dom,w:dom.window,errors,scrolls,calls};
 }
 (async()=>{
- let x=await boot('http://fixture/session/reading-fixture',saved);assert.equal(x.w.location.hash,'#task-2');assert.ok(x.scrolls.includes(150),'Restore section anchor after hydration');assert.ok(x.w.document.querySelectorAll('.task').length<=3);
+ let x=await boot('http://fixture/session/reading-fixture',saved);assert.equal(x.w.history.scrollRestoration,'manual');assert.equal(x.w.location.hash,'#task-2');assert.ok(x.scrolls.includes(150),'Restore section anchor after hydration');assert.ok(x.w.document.querySelectorAll('.task').length<=3);
  const a=x.w.document.querySelector('.task[data-id="b"] .report-link');x.w.document.addEventListener('click',e=>e.preventDefault());a.dispatchEvent(new x.w.MouseEvent('click',{bubbles:true,cancelable:true}));assert.equal(new URL(a.href).searchParams.get('task'),'2');const value=JSON.parse(x.w.localStorage.getItem(key));assert.equal(value.task,'b');assert.equal(value.section,1);assert.equal(value.anchor,'Read report');assert.equal(x.w.localStorage.getItem('codexviewReadingRecent'),'["reading-fixture"]');assert.deepEqual(x.errors,[]);x.dom.window.close();
  x=await boot('http://fixture/session/reading-fixture#task-1',saved);assert.equal(x.w.location.hash,'#task-1');assert.ok(!x.scrolls.includes(150),'Explicit links override saved tasks');x.dom.window.close();
  x=await boot('http://fixture/session/reading-fixture?resume=1#task-2',saved);assert.ok(x.scrolls.includes(150));x.dom.window.close();

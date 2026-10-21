@@ -1,3 +1,4 @@
+if('scrollRestoration' in history)history.scrollRestoration='manual';
 // Tiny per-session bookmarks. No transcript bodies or server writes are stored.
 let readingTimer=0,readingInitial=null,readingBoot=true;
 function readBookmark(){try{let v=JSON.parse(localStorage.getItem('codexviewReading:'+M.sid)||'null');return v?.v===1&&v.sid===M.sid&&typeof v.task==='string'?v:null}catch{return null}}

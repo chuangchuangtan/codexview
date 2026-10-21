@@ -1,3 +1,4 @@
+if('scrollRestoration' in history)history.scrollRestoration='manual';
 const fileModel=JSON.parse(document.querySelector('#fileModel').textContent);
 markdownSessionId=fileModel.sid||'';markdownTask=fileModel.task||'';
 const fileEl=id=>document.getElementById(id);
