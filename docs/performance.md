@@ -117,3 +117,16 @@ The shell grew by 19,791 bytes (9.3%); all endpoint p95 values remain below the 
 For three distinct queries (one English filename, one Chinese phrase, one absent marker), baseline streaming took 6.51 / 5.59 / 6.83 seconds; prepared compressed-cache queries took 3.71 / 3.55 / 2.82 seconds, with identical ordered results. This is one query comparison per case, not a percentile claim. Explicit cache preparation took 11.35 seconds and covered the complete source within the 128 MiB cap. Cache preparation is not part of ordinary entry or query latency; repeating the same query uses the existing query-result memory cache. Performance can vary with storage contention and oversize records.
 
 Browser checks on a generated 2,000-task session exercised five successive native Page Down actions, followed by five Page Up actions. Recorded scroll positions advanced and reversed by 680 px per page without rewinding after hydration; three task DOM nodes remained. Separate DOM integration covers user movement during an 80 ms pending payload, deep section 479 of a 480-section task, visible-only polling, follow pause, reports and image zoom. Synthetic append testing exercised a new task arriving while Follow latest was active. These checks do not certify every possible image layout or touchscreen device.
+
+## Task-window repair (2026-10-25)
+
+Compared dev.5 against deployed dev.4 on the same 839-task, 697,452,685-byte Native session and Python 3.7 server, using 50 alternating loopback requests per endpoint and separate runtime directories. These are HTTP timings, not browser paint.
+
+| Endpoint | dev.4 median / p95 | dev.5 median / p95 |
+| --- | ---: | ---: |
+| Session shell | 15.33 / 19.45 ms | 15.48 / 17.30 ms |
+| Warm manifest | 15.95 / 16.92 ms | 16.58 / 17.76 ms |
+| Task 830 structure | 3.74 / 4.16 ms | 4.05 / 4.60 ms |
+| Representative task 830 section | 3.70 / 4.47 ms | 4.09 / 4.86 ms |
+
+The shell grew by 2,761 bytes (1.2%); no discovery/index/search algorithm changes or third-party runtime dependencies were introduced. Real-browser validation covered 48 Page Down/Page Up/direction-change actions around tasks 830–834 and 12 wheel actions, with no duplicate task IDs, at most three task nodes, and no browser errors. A dedicated geometry fixture also checks measured spacer replacement with unequal heights, replayed insertion, stale prefetch and cancelled payload recovery. The earlier uniform-height fixture did not cover those cases. This does not certify every image/font layout or touchscreen device.

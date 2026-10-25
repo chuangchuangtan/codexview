@@ -3,7 +3,7 @@
   <p><strong>上千轮长会话，也能清晰回看。</strong></p>
   <p>终端继续执行，浏览器按任务阅读、搜索、定位。</p>
   <p><code>1,000+ 轮对话</code> · <code>按需加载</code> · <code>单文件部署</code> · <code>严格只读</code></p>
-  <p><a href="https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.4">下载当前版本</a> · <a href="README.md">English</a> · <a href="LICENSE">MIT 许可证</a></p>
+  <p><a href="https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.5">下载当前版本</a> · <a href="README.md">English</a> · <a href="LICENSE">MIT 许可证</a></p>
 </div>
 
 CodexView 是为**数百至上千轮长会话**设计的轻量 Codex CLI 阅读器。将本机或远程服务器上的对话、工具执行与 Markdown / HTML 报告整理为清晰的网页，方便回看完整过程、查找关键结论、接着上次的位置阅读。
@@ -14,7 +14,7 @@ CodexView 是为**数百至上千轮长会话**设计的轻量 Codex CLI 阅读�
 
 **规模验证**：已验证 2,000 轮合成会话，以及 755 个任务、约 616 MB 的真实会话；两组验证分别覆盖任务规模与大文件场景。[查看验证范围与性能记录](docs/performance.md#task-count-validation-2026-10-21)。
 
-**最近更新：2026-10-22（北京时间）** · 当前版本：`6.3.0-dev.4` · 开发预览版
+**最近更新：2026-10-25（北京时间）** · 当前版本：`6.3.0-dev.5` · 开发预览版
 
 ![CodexView 在 2,000 轮合成会话中定位到第 1,000 轮](docs/images/continuous-reader.png)
 
@@ -39,23 +39,23 @@ CodexView 是为**数百至上千轮长会话**设计的轻量 Codex CLI 阅读�
 
 ## 安装
 
-以下安装的是 **6.3.0-dev.4 开发预览版**，包含连续阅读、Markdown 和静态 HTML 报告阅读。
+以下安装的是 **6.3.0-dev.5 开发预览版**，包含连续阅读、Markdown 和静态 HTML 报告阅读。
 
 升级前先运行 `codexview stop`，备份审阅记录，再替换程序。
 
 支持 Linux 和 macOS，需要 Python 3.7 或更新版本。推荐使用仍受维护的 Python。Windows 暂未验证。
 
-下载发布文件 **[codexview-6.3.0-dev.4](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev.4/codexview-6.3.0-dev.4)**，在下载目录打开终端，依次执行：
+下载发布文件 **[codexview-6.3.0-dev.5](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev.5/codexview-6.3.0-dev.5)**，在下载目录打开终端，依次执行：
 
 ```sh
 mkdir -p "$HOME/.local/bin"
-cp codexview-6.3.0-dev.4 "$HOME/.local/bin/codexview"
+cp codexview-6.3.0-dev.5 "$HOME/.local/bin/codexview"
 chmod +x "$HOME/.local/bin/codexview"
 export PATH="$HOME/.local/bin:$PATH"
 codexview --version
 ```
 
-最后显示 `CodexView 6.3.0-dev.4` 即表示安装成功。
+最后显示 `CodexView 6.3.0-dev.5` 即表示安装成功。
 
 历史基线：[6.2.1](https://github.com/chuangchuangtan/codexview/releases/tag/v6.2.1)。不同版本的功能与文件请以对应 Release 为准。
 
@@ -131,9 +131,9 @@ codexview serve --host 0.0.0.0 --port 80 --codex-home /path/to/.codex
 
 Cmd/Ctrl F 搜索会话内容，`/` 筛选任务标题。点击 Refresh 检查新追加的记录。任务时间按浏览器本地时区显示。
 
-## 2026-10-21 更新：连续阅读（6.3.0-dev.4）
+## 2026-10-21 更新：连续阅读（6.3.0-dev.5）
 
-**2026-10-22 · 6.3.0-dev.4 修复：**恢复 Important / Marked / Later / Reviewed、笔记保存及上下任务切换。保存后原位更新，失败时明确提示重试。
+**2026-10-25 · 6.3.0-dev.5 修复：**修复任务重复挂载及上下翻阅跳动。普通滚动仅更新选中任务，不重启阅读器；恢复旧任务时保留实测高度。保留上一版的审阅保存和任务导航修复。
 
 同时保留以下功能：
 
@@ -145,7 +145,7 @@ Cmd/Ctrl F 搜索会话内容，`/` 筛选任务标题。点击 Refresh 检查�
 
 保留 Markdown / 静态 HTML 阅读、源码切换、标题目录、段落恢复和可调整布局。报告仅在打开时读取，并受配置的项目目录限制。
 
-安装 **6.3.0-dev.4** 后，指定可读项目目录即可打开报告：
+安装 **6.3.0-dev.5** 后，指定可读项目目录即可打开报告：
 
 ```sh
 codexview serve --host 0.0.0.0 --port 80 --file-root /path/to/project/reports
@@ -167,10 +167,10 @@ Codex 原始 session、rollout、config、auth 数据严格只读，Native 会�
 
 ## 其他下载
 
-历史版本：[6.3.0-dev.3](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.3)（连续阅读） · [6.3.0-dev.2](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.2)（阅读精修） · [6.3.0-dev](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev)（最初的报告阅读预览） · [6.2.1](https://github.com/chuangchuangtan/codexview/releases/tag/v6.2.1)（旧版基线）。
+历史版本：[6.3.0-dev.4](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.4)（审阅操作） · [6.3.0-dev.3](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.3)（连续阅读） · [6.3.0-dev.2](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.2)（阅读精修） · [6.3.0-dev](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev)（最初的报告阅读预览） · [6.2.1](https://github.com/chuangchuangtan/codexview/releases/tag/v6.2.1)（旧版基线）。
 
-- [ZIP](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev.4/codexview-6.3.0-dev.4.zip) / [tar.gz](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev.4/codexview-6.3.0-dev.4.tar.gz)：完整源码和文档。
-- [SHA256SUMS](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev.4/SHA256SUMS)：发布文件的 SHA-256 校验值。
+- [ZIP](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev.5/codexview-6.3.0-dev.5.zip) / [tar.gz](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev.5/codexview-6.3.0-dev.5.tar.gz)：完整源码和文档。
+- [SHA256SUMS](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev.5/SHA256SUMS)：发布文件的 SHA-256 校验值。
 
 采用 [MIT License](LICENSE)。更多信息：[安全说明](SECURITY.md) · [参与贡献](CONTRIBUTING.md)。
 

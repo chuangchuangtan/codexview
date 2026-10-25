@@ -3,7 +3,7 @@
   <p><strong>Thousands of turns. Clear context.</strong></p>
   <p>Keep the work running in your terminal. Read, search and navigate in your browser.</p>
   <p><code>1,000+ turns</code> · <code>On-demand loading</code> · <code>Single file</code> · <code>Read-only</code></p>
-  <p><a href="https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.4">Download</a> · <a href="README.zh-CN.md">中文说明</a> · <a href="LICENSE">MIT License</a></p>
+  <p><a href="https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.5">Download</a> · <a href="README.zh-CN.md">中文说明</a> · <a href="LICENSE">MIT License</a></p>
 </div>
 
 CodexView is a lightweight Codex CLI reader built for **hundreds to thousands of conversation turns**. Browse conversations, tool execution and Markdown / HTML reports from your machine or a remote server, find earlier decisions in context, and continue where you stopped reading.
@@ -14,7 +14,7 @@ CodexView is a lightweight Codex CLI reader built for **hundreds to thousands of
 
 **Scale validation**: a 2,000-turn synthetic session and a 755-task, approximately 616 MB real session have been exercised separately, covering task count and large-file workloads. [See validation scope and performance records](docs/performance.md#task-count-validation-2026-10-21).
 
-**Last updated: 2026-10-22 (Asia/Shanghai)** · Current version: `6.3.0-dev.4` · Development preview
+**Last updated: 2026-10-25 (Asia/Shanghai)** · Current version: `6.3.0-dev.5` · Development preview
 
 ![CodexView at turn 1,000 of a 2,000-turn synthetic session](docs/images/continuous-reader.png)
 
@@ -39,23 +39,23 @@ Browser reading is independent of the Codex CLI execution instance. CodexView do
 
 ## Install
 
-Install **6.3.0-dev.4 (development preview)**, including continuous reading and Markdown / static HTML reports.
+Install **6.3.0-dev.5 (development preview)**, including continuous reading and Markdown / static HTML reports.
 
 When upgrading, run `codexview stop` and back up review state before replacing the program.
 
 Supports Linux and macOS with Python 3.7 or newer. Use a maintained Python version for new installations. Windows has not been validated.
 
-Download **[codexview-6.3.0-dev.4](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev.4/codexview-6.3.0-dev.4)**, open a terminal in the download directory, and run:
+Download **[codexview-6.3.0-dev.5](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev.5/codexview-6.3.0-dev.5)**, open a terminal in the download directory, and run:
 
 ```sh
 mkdir -p "$HOME/.local/bin"
-cp codexview-6.3.0-dev.4 "$HOME/.local/bin/codexview"
+cp codexview-6.3.0-dev.5 "$HOME/.local/bin/codexview"
 chmod +x "$HOME/.local/bin/codexview"
 export PATH="$HOME/.local/bin:$PATH"
 codexview --version
 ```
 
-The final command should print `CodexView 6.3.0-dev.4`.
+The final command should print `CodexView 6.3.0-dev.5`.
 
 Previous baseline: [6.2.1](https://github.com/chuangchuangtan/codexview/releases/tag/v6.2.1). Use each Release’s own files and feature list.
 
@@ -131,9 +131,9 @@ Directory priority: `--codex-home` → `CODEX_HOME` environment variable → `~/
 
 Use Cmd/Ctrl F to search session content and `/` to filter task titles. Refresh checks appended records. Task timestamps use your browser's local timezone.
 
-## 2026-10-21 update: continuous reading (6.3.0-dev.4)
+## 2026-10-21 update: continuous reading (6.3.0-dev.5)
 
-**2026-10-22 · 6.3.0-dev.4 hotfix:** restores Important / Marked / Later / Reviewed, note saving and next/previous task controls. Saved state updates in place; failed saves show a retry message.
+**2026-10-25 · 6.3.0-dev.5 hotfix:** prevents duplicate task mounting and stabilizes forward/backward scrolling. Passive scrolling updates task selection without restarting the reader; measured task heights are retained during restoration. Review saves and task navigation from the preceding hotfix are retained.
 
 The preview also includes:
 
@@ -145,7 +145,7 @@ The preview also includes:
 
 Includes the existing Markdown/static HTML reader, Read / Source, heading contents, paragraph recovery and adjustable layout. Reports load only when opened inside configured project roots.
 
-After installing **6.3.0-dev.4**, enable a project directory for report reading:
+After installing **6.3.0-dev.5**, enable a project directory for report reading:
 
 ```sh
 codexview serve --host 0.0.0.0 --port 80 --file-root /path/to/project/reports
@@ -167,10 +167,10 @@ This is a **public preview**. First-time search of very large files can take sev
 
 ## Other downloads
 
-Earlier versions: [6.3.0-dev.3](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.3) (continuous reading) · [6.3.0-dev.2](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.2) (reading refinement) · [6.3.0-dev](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev) (first report-reader preview) · [6.2.1](https://github.com/chuangchuangtan/codexview/releases/tag/v6.2.1) (previous baseline).
+Earlier versions: [6.3.0-dev.4](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.4) (review controls) · [6.3.0-dev.3](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.3) (continuous reading) · [6.3.0-dev.2](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev.2) (reading refinement) · [6.3.0-dev](https://github.com/chuangchuangtan/codexview/releases/tag/v6.3.0-dev) (first report-reader preview) · [6.2.1](https://github.com/chuangchuangtan/codexview/releases/tag/v6.2.1) (previous baseline).
 
-- [ZIP](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev.4/codexview-6.3.0-dev.4.zip) / [tar.gz](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev.4/codexview-6.3.0-dev.4.tar.gz): full source and documentation.
-- [SHA256SUMS](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev.4/SHA256SUMS): SHA-256 checksums for release assets.
+- [ZIP](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev.5/codexview-6.3.0-dev.5.zip) / [tar.gz](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev.5/codexview-6.3.0-dev.5.tar.gz): full source and documentation.
+- [SHA256SUMS](https://github.com/chuangchuangtan/codexview/releases/download/v6.3.0-dev.5/SHA256SUMS): SHA-256 checksums for release assets.
 
 Released under the [MIT License](LICENSE). See [Security](SECURITY.md) and [Contributing](CONTRIBUTING.md) for more information.
 

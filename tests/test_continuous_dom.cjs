@@ -24,7 +24,7 @@ const dom=new JSDOM(result.stdout,{url:'http://fixture/session/continuous#task-3
 (async()=>{
  await wait(()=>doc.querySelectorAll('.task').length===3&&!w.eval('readerBusy'));
  const next=doc.querySelector('.task[data-id="task3"]');scroll+=top(next)-180;const anchorBefore=top(next);delay=80;w.eval('suppressScrollUntil=0');
- const pending=w.eval('shiftVirtual(1)');await new Promise(r=>setTimeout(r,20));scroll+=120;await pending;delay=0;
+ const pending=w.eval('preloadTaskEdge(1)');await new Promise(r=>setTimeout(r,20));scroll+=120;await pending;delay=0;await w.eval('shiftVirtual(1)');
  assert.equal(top(next),anchorBefore-120,'A slow payload must preserve scroll since the request began');assert.equal(doc.querySelectorAll('.task').length,3);assert.ok(parseFloat(doc.querySelector('#readerBefore').style.height)>0,'Evicted task geometry remains');
  const count=calls.length;w.dispatchEvent(new w.Event('scroll'));await new Promise(r=>setTimeout(r,25));assert.equal(calls.length,count,'Context updates do not fetch or navigate');assert.ok(doc.querySelector('#readingTitle').textContent.includes('Task'));
  source='two';await w.eval('pollSource()');assert.equal(doc.querySelector('#newContent').hidden,false);assert.equal(w.location.hash,'#task-4');

@@ -7,7 +7,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-VERSION='6.3.0-dev.4'
+VERSION='6.3.0-dev.5'
 MIN_PY=(3,7)
 if sys.version_info < MIN_PY:
     raise SystemExit('CodexView requires Python >= 3.7; current: %s' % sys.version.split()[0])

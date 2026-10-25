@@ -78,18 +78,18 @@ async function reader(id,scroll=true,passive=false){
   await ensure(V[at]);if(tok!==token)return;
   let W=V.slice(Math.max(0,at-1),at+2);trimTaskWindow(W,scroll&&!readingInitial);
   let current=$(`.task[data-id="${CSS.escape(id)}"]`);
-  if(!current){current=append(V[at]);insertTask(current,V[at],W)}
+  if(!current){current=append(V[at]);current=insertTask(current,V[at],W)}
   observeChunks(current);
   pref();if(scroll)current.scrollIntoView({block:'start',behavior:'instant'});
   $('#count').textContent=`${at+1} / ${V.length}`;
   // Reveal the requested search payload before fetching adjacent Task metadata.
   let searchTarget=pendingSearchTarget?.task_id===id?pendingSearchTarget:null;
   if(searchTarget)pendingSearchTarget=null;
-  await hydrate(current,tok);
+  await hydrate(current,tok);if(tok===token)releaseTaskHeight(current);
   if(searchTarget&&tok===token)await revealSearchTarget(searchTarget);
   for(let t of W){if(tok!==token)return;if(t.id===id)continue;await ensure(t);if(tok!==token)return;
    let n=$(`.task[data-id="${CSS.escape(t.id)}"]`);if(n)continue;
-   n=append(t);insertTask(n,t,W);observeChunks(n);
+   n=append(t);n=insertTask(n,t,W);observeChunks(n);
    // Neighbor placeholders are hydrated only as they enter the viewport.
   }
   await restoreBookmark(current,tok);
@@ -101,29 +101,28 @@ async function reader(id,scroll=true,passive=false){
 const inflightPayloads=new WeakMap();
 async function hydrate(root,tok){
  let nodes=[...root.querySelectorAll('.sec.user,.sec.assistant')],i=0;
- async function worker(){while(i<nodes.length&&tok===token){let n=nodes[i++],box=n.querySelector('.payload');if(box.dataset.loaded)continue;let pending=inflightPayloads.get(box);if(!pending){pending=load(n);inflightPayloads.set(box,pending)}try{await pending}finally{inflightPayloads.delete(box)}}}
- await Promise.all(Array.from({length:Math.min(3,nodes.length)},worker));
+ async function worker(){while(i<nodes.length&&tok===token){let n=nodes[i++],box=n.querySelector('.payload');if(box.dataset.loaded)continue;let pending=inflightPayloads.get(box);if(!pending||pending.token!==tok){pending={token:tok,promise:load(n)};inflightPayloads.set(box,pending)}try{await pending.promise}finally{if(inflightPayloads.get(box)===pending)inflightPayloads.delete(box)}}}
+ await Promise.all(Array.from({length:Math.min(3,nodes.length)},worker));if(tok===token&&root.classList.contains('task'))releaseTaskHeight(root);
 }
-const proseObserver=new IntersectionObserver(entries=>{for(let e of entries)if(e.isIntersecting){proseObserver.unobserve(e.target);hydrate(e.target,token)}},{rootMargin:'900px'});
+const proseObserver=new IntersectionObserver(entries=>{for(let e of entries)if(e.isIntersecting&&e.target.isConnected){proseObserver.unobserve(e.target);hydrate(e.target,token)}},{rootMargin:'900px'});
 function observeProse(){$$('.task').forEach(n=>{if(n.dataset.id!==cur)proseObserver.observe(n)})}
 
 // Layout and programmatic search scrolling must never start Task navigation.
-let shiftBusy=false;
-async function shiftVirtual(dir){
- if(shiftBusy||readerBusy||layoutDragging||performance.now()<suppressScrollUntil)return;
- let V=visible(),at=V.findIndex(t=>t.id===cur),next=V[at+dir];if(!next)return;
- let anchor=$(`.task[data-id="${CSS.escape(next.id)}"]`);if(!anchor)return;
- shiftBusy=true;
- try{await reader(next.id,false,true)}
- finally{shiftBusy=false;checkUserBoundary()}
+function adoptTask(id){
+ let V=visible(),at=V.findIndex(t=>t.id===id);if(at<0||id===cur)return;cur=id;history.replaceState(null,'','#task-'+V[at].n);side();let list=$('#tl');list.scrollTop=Math.max(0,at*navRow()-(list.clientHeight-navRow())/2);side();navUpdate();$('#jumpTask').value=V[at].n;$('#count').textContent=`${at+1} / ${V.length}`;updateReadingContext();
 }
+function adoptVisibleTask(){
+ if(readerBusy||layoutDragging||performance.now()<suppressScrollUntil||performance.now()>userScrollUntil)return;
+ let nodes=[...$('#reader').querySelectorAll(':scope > .task')],top=readerTop(),node=nodes.find(n=>n.getBoundingClientRect().bottom>top)||nodes[nodes.length-1];if(node)adoptTask(node.dataset.id);
+}
+async function shiftVirtual(dir){if(readerBusy||layoutDragging||performance.now()<suppressScrollUntil)return;let V=visible(),at=V.findIndex(t=>t.id===cur),next=V[at+dir];if(next&&$(`.task[data-id="${CSS.escape(next.id)}"]`))adoptTask(next.id)}
 window.addEventListener('wheel',e=>{if(e.target.closest('.side,.session-search-panel,.palette-card,pre'))return;userMotion++;userScrollDir=Math.sign(e.deltaY);userScrollUntil=performance.now()+600;checkUserBoundary()},{passive:true});
 let touchReadingY=null;
 window.addEventListener('touchstart',e=>{touchReadingY=e.target.closest('.side,.session-search-panel,.palette-card,pre')?null:e.touches[0]?.clientY},{passive:true});
 window.addEventListener('touchmove',e=>{let y=e.touches[0]?.clientY;if(touchReadingY==null||y==null)return;let delta=touchReadingY-y;touchReadingY=y;if(Math.abs(delta)>1){userMotion++;userScrollDir=Math.sign(delta);userScrollUntil=performance.now()+1500;checkUserBoundary()}},{passive:true});
 window.addEventListener('keydown',e=>{if(e.target.matches('input,textarea,select'))return;if(['PageDown','ArrowDown',' '].includes(e.key)){userMotion++;userScrollDir=1;userScrollUntil=performance.now()+600}else if(['PageUp','ArrowUp'].includes(e.key)){userMotion++;userScrollDir=-1;userScrollUntil=performance.now()+600}});
 let boundaryFrame=0;
-function checkUserBoundary(){if(boundaryFrame)return;boundaryFrame=requestAnimationFrame(()=>{boundaryFrame=0;if(layoutDragging||readerBusy||performance.now()<suppressScrollUntil||performance.now()>userScrollUntil)return;let n=$(`.task[data-id="${CSS.escape(cur||'')}"]`);if(!n)return;let r=n.getBoundingClientRect();preloadTaskEdge(userScrollDir);if(userScrollDir>0&&r.bottom<readerTop()+80)shiftVirtual(1);else if(userScrollDir<0&&r.top>readerTop()+40)shiftVirtual(-1)})}
+function checkUserBoundary(){if(boundaryFrame)return;boundaryFrame=requestAnimationFrame(()=>{boundaryFrame=0;if(layoutDragging||readerBusy||performance.now()<suppressScrollUntil||performance.now()>userScrollUntil)return;adoptVisibleTask();preloadTaskEdge(userScrollDir)})}
 window.addEventListener('scroll',checkUserBoundary,{passive:true});
 
 function markExact(root,q){

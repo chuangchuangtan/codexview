@@ -1,6 +1,10 @@
-# Continuous reading (6.3.0-dev.3)
+# Continuous reading (6.3.0-dev.5)
 
-Updated 2026-10-21 (Asia/Shanghai). This is a development preview.
+Updated 2026-10-25 (Asia/Shanghai). This is a development preview.
+
+Version 6.3.0-dev.5 unifies window commits and makes task insertion idempotent. Ordinary scroll selection no longer calls the explicit navigation routine or cancels prose requests. A measured task stays represented by its spacer until the replacement node is mounted at its remembered height; stale prefetches and detached observer entries are ignored. Paragraph anchors fall back to their section/task if a payload is replaced.
+
+6.3.0-dev.5 统一任务窗口更新，同一任务只保留一个节点。滚动切换不再重启阅读器；旧任务恢复时先用实测高度替换占位，再加载正文，忽略过期请求，保留段落位置。
 
 ## Reading controls / 阅读操作
 

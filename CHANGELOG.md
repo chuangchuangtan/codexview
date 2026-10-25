@@ -1,5 +1,13 @@
 # Changelog
 
+## 6.3.0-dev.5 — 2026-10-25 (Asia/Shanghai) — task window repair
+
+- Route task insertion/removal through one idempotent window commit; reuse mounted IDs and reject superseded prefetches.
+- Make passive scrolling update selection only, without restarting navigation or cancelling active prose loads.
+- Exchange spacers for restored tasks at their measured heights; insert before eviction to avoid transient document shrinkage. Retain section-chunk measurements.
+- Keep paragraph anchors with section/task fallbacks, ignore detached observers and retry payloads from superseded navigations.
+- Add variable-height, duplicate-insertion, delayed-response and scroll-position regressions; retain review-state and read-only contracts.
+
 ## 6.3.0-dev.4 — 2026-10-22 (Asia/Shanghai) — review controls hotfix
 
 - Restore missing review-write and task-step handlers used by mark buttons, review shortcuts, notes and next/previous navigation.
